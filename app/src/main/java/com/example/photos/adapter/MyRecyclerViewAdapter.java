@@ -7,27 +7,43 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.photos.R;
-import com.example.photos.activity.AlbumView;
+import com.example.photos.activity.AlbumViewActivity;
 import com.example.photos.model.Album;
 import com.example.photos.model.Photo;
 
 import java.util.List;
 
-public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewHolder> {
+public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAdapter.MyRecyclerViewHolder> {
 
     private int selectedPosition = RecyclerView.NO_POSITION;
     private GestureDetector gestureDetector;
     private RecyclerView recyclerView;
-    private static final int REQUEST_CODE_RENAME = 1;
-    private static final int REQUEST_CODE_DELETE = 2;
     private Context context;
     private List<Album> albums;
+
+    // View holder for
+    public static class MyRecyclerViewHolder extends RecyclerView.ViewHolder {
+        private TextView albumName;
+        private ImageView albumFirstImages;
+        private CardView albumCardView;
+
+        public MyRecyclerViewHolder(@NonNull View itemView) {
+            super(itemView);
+            albumName = itemView.findViewById(R.id.album_name_textView);
+            albumFirstImages = itemView.findViewById(R.id.album_first_images);
+            albumCardView = itemView.findViewById(R.id.albumCardViewId);
+
+        }
+    }
 
     public MyRecyclerViewAdapter(Context context, List<Album> albums) {
         this.context = context;
@@ -39,7 +55,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewHo
                 int position = getAdapterPositionFromView(e.getX(), e.getY());
                 if (position != RecyclerView.NO_POSITION) {
                     Album selectedAlbum = albums.get(position);
-                    Intent intent = new Intent(context, AlbumView.class);
+                    Intent intent = new Intent(context, AlbumViewActivity.class);
                     intent.putExtra("album", selectedAlbum);
                     context.startActivity(intent);
                     return true;
@@ -86,7 +102,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewHo
             if (adapterPosition != RecyclerView.NO_POSITION) {
                 selectedPosition = adapterPosition;  // Update selected position here
                 Album selectedAlbum = albums.get(adapterPosition);
-                Intent intent = new Intent(context, AlbumView.class);
+                Intent intent = new Intent(context, AlbumViewActivity.class);
                 Toast.makeText(view.getContext(), "Clicked " + adapterPosition, Toast.LENGTH_SHORT).show();
                 // Pass the selected album to AlbumView activity
                 intent.putExtra("album", selectedAlbum);
@@ -128,6 +144,4 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewHo
             selectedPosition = RecyclerView.NO_POSITION;
         }
     }
-
-
 }

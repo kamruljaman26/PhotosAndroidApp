@@ -1,7 +1,6 @@
 package com.example.photos.activity;
 
 import static com.example.photos.databse.PhotoDatabase.findAlbumByName;
-import static com.example.photos.databse.PhotoDatabase.updatePhoto;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -29,15 +28,12 @@ import com.example.photos.model.Photo;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AlbumView extends AppCompatActivity {
+public class AlbumViewActivity extends AppCompatActivity {
 
     private Album selectedAlbum;
-
-    Context context;
-
-    PhotoAdapter adapter;
+    private Context context;
+    private PhotoAdapter adapter;
     private Button viewSlideShow, addPhoto;
-
     private static final int REQUEST_CODE_GALLERY = 1;
 
     @SuppressLint("MissingInflatedId")
@@ -51,7 +47,6 @@ public class AlbumView extends AppCompatActivity {
         backButton.setOnClickListener(view -> onBackPressed());
         backButtonText.setOnClickListener(view -> onBackPressed());
 
-
         // all button initializes
         viewSlideShow = findViewById(R.id.viewSlide_album_button);
         addPhoto = findViewById(R.id.add_photo_button);
@@ -64,30 +59,31 @@ public class AlbumView extends AppCompatActivity {
                 // Check if the selected album has photos
                 if (selectedAlbum.getPhotos() != null && !selectedAlbum.getPhotos().isEmpty()) {
                     List<Photo> albumPhotos = selectedAlbum.getPhotos();
-                  PhotoAdapter  photoAdapter = new PhotoAdapter(this, albumPhotos, selectedAlbum);
+                    PhotoAdapter photoAdapter = new PhotoAdapter(this, albumPhotos, selectedAlbum);
                     RecyclerView photoRecyclerView = findViewById(R.id.photoRecyclerView);
                     photoRecyclerView.setAdapter(photoAdapter);
                     photoRecyclerView.setLayoutManager(new LinearLayoutManager(this));
                 } else {
                     // If the selected album doesn't have photos, create an empty adapter
-                 PhotoAdapter  photoAdapter = new PhotoAdapter(this, new ArrayList<>(), selectedAlbum);
+                    PhotoAdapter photoAdapter = new PhotoAdapter(this, new ArrayList<>(), selectedAlbum);
                     RecyclerView photoRecyclerView = findViewById(R.id.photoRecyclerView);
                     photoRecyclerView.setAdapter(photoAdapter);
                     photoRecyclerView.setLayoutManager(new LinearLayoutManager(this));
                 }
             }
         }
-        viewSlideShow.setOnClickListener(view->{
-            Intent intent1 = new Intent(AlbumView.this, ViewSlideShow.class);
+        viewSlideShow.setOnClickListener(view -> {
+            Intent intent1 = new Intent(AlbumViewActivity.this, ViewSlideShow.class);
             intent1.putExtra("ALBUM_KEY", selectedAlbum);
             startActivity(intent1);
         });
-        addPhoto.setOnClickListener(view->{
+        addPhoto.setOnClickListener(view -> {
             // here I want to add photo from device gallery photo to selected album
             Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             startActivityForResult(galleryIntent, REQUEST_CODE_GALLERY);
         });
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -99,8 +95,6 @@ public class AlbumView extends AppCompatActivity {
                 // Create a new photo from the URI
                 Photo newPhoto = createPhotoFromUri(selectedImageUri);
                 if (newPhoto != null) {
-                    // Set the associated album for the new photo
-                    newPhoto.setAssociatedAlbum(selectedAlbum);
                     // Add the photo to the selected album
                     selectedAlbum.addPhoto(newPhoto);
                     // Update the adapter with the new photo
@@ -129,13 +123,11 @@ public class AlbumView extends AppCompatActivity {
         }
     }
 
-
     private Photo createPhotoFromUri(Uri uri) {
         if (selectedAlbum != null) {
-            Photo newPhoto = new Photo(uri);
-            newPhoto.setAssociatedAlbum(selectedAlbum);
-            Log.d("PhotoCreation", "New Photo: " + newPhoto.toString());  // Add logging
-            return newPhoto;
+            Photo photo = new Photo(-1, uri);
+            Log.d("PhotoCreation", "New Photo: " + photo.toString());  // Add logging
+            return photo;
         } else {
             // Handle the case when selectedAlbum is null
             Log.e("PhotoCreation", "Error: No album selected");

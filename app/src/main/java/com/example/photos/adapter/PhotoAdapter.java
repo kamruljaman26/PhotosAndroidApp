@@ -2,7 +2,6 @@ package com.example.photos.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,9 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.Target;
 import com.example.photos.R;
-import com.example.photos.activity.PhotoDetails;
+import com.example.photos.activity.PhotoDetailsActivity;
 import com.example.photos.model.Album;
 import com.example.photos.model.Photo;
 
@@ -24,7 +22,6 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
 
     private Context context;
     private List<Photo> photos;
-
     private Album album;
 
     public PhotoAdapter(Context context, List<Photo> photos ,Album album) {
@@ -57,7 +54,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
             @Override
             public void onClick(View view) {
                 // Pass the corresponding album to another activity
-                Intent intent = new Intent(context, PhotoDetails.class);
+                Intent intent = new Intent(context, PhotoDetailsActivity.class);
                 // Pass the selected photo
                 intent.putExtra("PHOTO_KEY", photo);
                 // Pass the corresponding album

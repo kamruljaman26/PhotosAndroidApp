@@ -11,6 +11,11 @@ public class Album implements Serializable {
     private String name;  // Name is used as the identifier
     private List<Photo> photos;
 
+    public Album(String name) {
+        this.name = name;
+        this.photos = new ArrayList<>();
+    }
+
     public Album(String name, List<Photo> photos) {
         this.name = name;
         this.photos = photos;
@@ -41,16 +46,6 @@ public class Album implements Serializable {
                 Objects.equals(photos, album.photos);
     }
 
-    public List<Photo> searchPhotos(String tagType, String tagValue) {
-        List<Photo> matchingPhotos = new ArrayList<>();
-        for (Photo photo : photos) {
-            if (photo.matchesSearch(tagType, tagValue)) {
-                matchingPhotos.add(photo);
-            }
-        }
-        return matchingPhotos;
-    }
-
     @Override
     public int hashCode() {
         return Objects.hash(name, photos);
@@ -58,5 +53,13 @@ public class Album implements Serializable {
 
     public void addPhoto(Photo photo) {
         photos.add(photo);
+    }
+
+    @Override
+    public String toString() {
+        return "Album{" +
+                "name='" + name + '\'' +
+                ", photos=" + photos +
+                '}';
     }
 }

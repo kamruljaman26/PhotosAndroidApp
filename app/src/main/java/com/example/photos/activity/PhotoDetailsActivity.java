@@ -3,6 +3,7 @@ package com.example.photos.activity;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -25,7 +26,7 @@ import com.example.photos.model.Photo;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PhotoDetails extends AppCompatActivity {
+public class PhotoDetailsActivity extends AppCompatActivity {
 
     private Album selectedAlbum;
     int selectedPhotoIndex;
@@ -33,11 +34,9 @@ public class PhotoDetails extends AppCompatActivity {
     private List<Photo> allPhotos;
     private ImagePagerAdapter adapter;
     private String selectedAlbumName;
-
     private TextView displayTagValue;
     private EditText getTagValue;
     private Button addTag, removeTag;
-
     private static final int ADD_TAG_REQUEST_CODE = 456;
 
     @Override
@@ -100,6 +99,7 @@ public class PhotoDetails extends AppCompatActivity {
                 deleteButton.setOnClickListener(v -> onDeleteButtonClicked());
                 moveButton.setOnClickListener(v -> onMoveButtonClicked());
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> parentView) {
                 // Do nothing here
@@ -112,7 +112,7 @@ public class PhotoDetails extends AppCompatActivity {
                 android.R.layout.simple_spinner_item
         );
         // Tag Section
-         selectedAlbum = findAlbumByName(selectedAlbumName);
+        selectedAlbum = findAlbumByName(selectedAlbumName);
         if (selectedAlbum != null && selectedPhotoIndex != -1) {
             // Get the selected photo
             List<Photo> albumPhotos = selectedAlbum.getPhotos();
@@ -123,7 +123,7 @@ public class PhotoDetails extends AppCompatActivity {
             }
         }
 
-       // Specify the layout to use when the list of choices appears.
+        // Specify the layout to use when the list of choices appears.
         adapterTag.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner.
         tagSpinner.setAdapter(adapterTag);
@@ -172,6 +172,7 @@ public class PhotoDetails extends AppCompatActivity {
             }
         });
     }
+
     private String formatTags(List<String> tags) {
         if (tags == null || tags.isEmpty()) {
             return "No tags";
@@ -192,6 +193,7 @@ public class PhotoDetails extends AppCompatActivity {
             showPhotoSelectionDialog(selectedAlbum);
         }
     }
+
     private void onDeleteButtonClicked() {
 
         if (selectedAlbumName != null && selectedPhotoIndex != -1) {
@@ -210,6 +212,7 @@ public class PhotoDetails extends AppCompatActivity {
             builder.show();
         }
     }
+
     // Method to delete the photo
     private void deletePhoto(String albumName, int photoIndex) {
         // Remove the photo from its selected album
@@ -225,6 +228,7 @@ public class PhotoDetails extends AppCompatActivity {
             }
         }
     }
+
     private void onMoveButtonClicked() {
         // Check if the intent is not null
         Intent intent = getIntent();
@@ -279,8 +283,6 @@ public class PhotoDetails extends AppCompatActivity {
     }
 
 
-
-
     // Helper method to find an album by name
     private Album findAlbumByName(String albumName) {
         for (Album album : allAlbums) {
@@ -290,6 +292,7 @@ public class PhotoDetails extends AppCompatActivity {
         }
         return null;
     }
+
     private void showPhotoSelectionDialog(final Album selectedAlbum) {
         // Implement a dialog or launch a new activity to display a list of photos
         // and allow the user to select one.
@@ -307,11 +310,13 @@ public class PhotoDetails extends AppCompatActivity {
         });
         builder.show();
     }
+
     @Override
     protected void onResume() {
         super.onResume();
         updateDisplayedTags();
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -325,6 +330,7 @@ public class PhotoDetails extends AppCompatActivity {
             }
         }
     }
+
     private void updateDisplayedTags() {
         if (selectedAlbum != null && selectedPhotoIndex != -1) {
             List<Photo> albumPhotos = selectedAlbum.getPhotos();
@@ -346,6 +352,7 @@ public class PhotoDetails extends AppCompatActivity {
             }
         }
     }
+
     private void showToast(String message) {
         runOnUiThread(() -> Toast.makeText(this, message, Toast.LENGTH_SHORT).show());
     }

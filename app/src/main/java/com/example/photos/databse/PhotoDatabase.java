@@ -20,30 +20,17 @@ public class PhotoDatabase {
 
     private static List<Album> albums = new ArrayList<>();
     private static List<Photo> allPhotos = new ArrayList<>();
-
     private static Map<String, List<Photo>> albumPhotosMap = new HashMap<>();
 
-    /*
-    public static List<Album> getAlbums() {
-        List<Album> albums = new ArrayList<>();
-        List<Photo> album1Photos = new ArrayList<>();
-        album1Photos.add(new Photo("path/to/photo1.jpg", new ArrayList<>(), R.drawable.art));
-        album1Photos.add(new Photo("path/to/photo2.jpg", new ArrayList<>(), R.drawable.beautifu_women));
-        Album album1 = new Album("Vacation 2022", album1Photos);
-        albums.add(album1);
-        // Add more albums as needed
-        return albums;
-    }
-     */
     // Initialize our photo database with some sample data
     static {
         // Add photos from the drawable folder
-        Photo photo1 = new Photo("acura.jpg", new ArrayList<>(), R.drawable.acura);
-        Photo photo2 = new Photo("bugatti_mistral.jpg", new ArrayList<>(), R.drawable.bugatti_mistral);
-        Photo photo3 = new Photo("jaguar.jpg", new ArrayList<>(), R.drawable.jaguar);
-        Photo photo4 = new Photo("lamborghini.jpg", new ArrayList<>(), R.drawable.lamborghini);
-        Photo photo5 = new Photo("lamborghini_huracan.jpg", new ArrayList<>(), R.drawable.lamborghini_huracan);
-        Photo photo6 = new Photo("porsche.jpg", new ArrayList<>(), R.drawable.porsche);
+        Photo photo1 = new Photo( R.drawable.acura, null);
+        Photo photo2 = new Photo(R.drawable.bugatti_mistral, null);
+        Photo photo3 = new Photo(R.drawable.jaguar, null);
+        Photo photo4 = new Photo(R.drawable.lamborghini, null);
+        Photo photo5 = new Photo(R.drawable.lamborghini_huracan, null);
+        Photo photo6 = new Photo(R.drawable.porsche, null);
         allPhotos.add(photo1);
         allPhotos.add(photo2);
         allPhotos.add(photo3);
@@ -67,7 +54,6 @@ public class PhotoDatabase {
     public static void addAlbum(Album album) {
         albums.add(album);
     }
-
     public static void removeAlbum(Album album) {
         albums.remove(album);
     }
@@ -89,11 +75,6 @@ public class PhotoDatabase {
         }
         return null;
     }
-    public static List<Photo> getAlbumPhotos(String albumName) {
-        // Retrieve the list of photos for the specified album name
-        return albumPhotosMap.get(albumName);
-    }
-
 
 
     private static final String PREF_NAME = "PhotoDatabasePrefs";

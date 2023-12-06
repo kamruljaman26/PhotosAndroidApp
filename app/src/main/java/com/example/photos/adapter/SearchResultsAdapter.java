@@ -42,10 +42,12 @@ public class SearchResultsAdapter extends RecyclerView.Adapter<SearchResultsAdap
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         private ImageView photo;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             photo = itemView.findViewById(R.id.photoImageView_for_add); // Replace with the actual ID of your ImageView in the item layout
         }
+
         public void bind(Photo photoItem) {
             // Assuming you have a method like getImageResourceId() in your Photo class
             int imageResourceId = photoItem.getImageResourceId();

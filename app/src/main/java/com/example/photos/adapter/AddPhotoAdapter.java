@@ -17,7 +17,6 @@ import java.util.List;
 
 public class AddPhotoAdapter extends ArrayAdapter<Photo> {
 
-
     public AddPhotoAdapter(@NonNull Context context, @NonNull List<Photo> objects) {
         super(context, 0, objects);
     }

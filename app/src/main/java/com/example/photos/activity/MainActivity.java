@@ -33,20 +33,13 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements Application.ActivityLifecycleCallbacks {
 
-    private static final int REQUEST_CODE_RENAME = 1;
-
-    private static final int REQUEST_CODE_DELETE = 2;
     List<Album> demoAlbum;
     MyRecyclerViewAdapter adapter;
     private Button rename;
     private Button delete;
-
     private Button search;
-
     private ImageView searchButton;
-
     private EditText getSearchValue;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements Application.Activ
 
         Button createButton = findViewById(R.id.create_album_button);
 
-       // demoAlbum = PhotoDatabase.getAlbums();
+        // demoAlbum = PhotoDatabase.getAlbums();
         RecyclerView recyclerView = findViewById(R.id.recyclerViewId);
         adapter = new MyRecyclerViewAdapter(this, demoAlbum);
         recyclerView.setAdapter(adapter);
@@ -77,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements Application.Activ
                 String albumName = input.getText().toString().trim();
                 if (!albumName.isEmpty()) {
                     // Create a new album with the entered name and an empty list of photos
-                    Album newAlbum = new Album(albumName, new ArrayList<>());
+                    Album newAlbum = new Album(albumName);
                     // Add general photos to the album
                     List<Photo> allPhotos = PhotoDatabase.getAllPhotos();
                     if (!allPhotos.isEmpty()) {
@@ -148,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements Application.Activ
         // search I should be able to search for photos by tag-value "new york" is the same as "nEw YOrk".  need to implement conjunction and disjunction as well.
         //In addition, matches should now allow auto completion, given a starting substring. For instance, when searching by location, if "New" is typed, matches should include photos taken in New York, New Mexico, New Zealand, etc auto-completed list.
         //Searches apply to photos across all albums, not just to the album that may be open.
-        search.setOnClickListener(view->{
+        search.setOnClickListener(view -> {
             String searchTerm = getSearchValue.getText().toString().trim().toLowerCase();
             if (!searchTerm.isEmpty()) {
                 List<Photo> searchResults = new ArrayList<>();
@@ -211,36 +204,6 @@ public class MainActivity extends AppCompatActivity implements Application.Activ
     }
 
     @Override
-    public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
-
-    }
-
-    @Override
-    public void onActivityStarted(@NonNull Activity activity) {
-
-    }
-
-    @Override
-    public void onActivityResumed(@NonNull Activity activity) {
-
-    }
-
-    @Override
-    public void onActivityPaused(@NonNull Activity activity) {
-
-    }
-
-    @Override
-    public void onActivityStopped(@NonNull Activity activity) {
-
-    }
-
-    @Override
-    public void onActivitySaveInstanceState(@NonNull Activity activity, @NonNull Bundle outState) {
-
-    }
-
-    @Override
     public void onActivityDestroyed(@NonNull Activity activity) {
         // Save album data when the activity is destroyed
         if (activity instanceof MainActivity) {
@@ -286,10 +249,34 @@ public class MainActivity extends AppCompatActivity implements Application.Activ
     // Convert JSON string to a list of albums
     private List<Album> convertStringToAlbums(String json) {
         Gson gson = new Gson();
-        Type type = new TypeToken<List<Album>>() {}.getType();
+        Type type = new TypeToken<List<Album>>() {
+        }.getType();
         return gson.fromJson(json, type);
     }
 
+    @Override
+    public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
+    }
+
+    @Override
+    public void onActivityStarted(@NonNull Activity activity) {
+    }
+
+    @Override
+    public void onActivityResumed(@NonNull Activity activity) {
+    }
+
+    @Override
+    public void onActivityPaused(@NonNull Activity activity) {
+    }
+
+    @Override
+    public void onActivityStopped(@NonNull Activity activity) {
+    }
+
+    @Override
+    public void onActivitySaveInstanceState(@NonNull Activity activity, @NonNull Bundle outState) {
+    }
 
 }
 
