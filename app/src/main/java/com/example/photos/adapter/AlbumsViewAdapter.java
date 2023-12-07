@@ -22,7 +22,7 @@ import com.example.photos.model.Photo;
 
 import java.util.List;
 
-public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAdapter.MyRecyclerViewHolder> {
+public class AlbumsViewAdapter extends RecyclerView.Adapter<AlbumsViewAdapter.MyRecyclerViewHolder> {
 
     private int selectedPosition = RecyclerView.NO_POSITION;
     private GestureDetector gestureDetector;
@@ -41,11 +41,10 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
             albumName = itemView.findViewById(R.id.album_name_textView);
             albumFirstImages = itemView.findViewById(R.id.album_first_images);
             albumCardView = itemView.findViewById(R.id.albumCardViewId);
-
         }
     }
 
-    public MyRecyclerViewAdapter(Context context, List<Album> albums) {
+    public AlbumsViewAdapter(Context context, List<Album> albums) {
         this.context = context;
         this.albums = albums;
 
@@ -93,9 +92,11 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
         holder.albumName.setText(album.getName());
 
         // Example: Assuming album.getFirstPhoto() returns the first photo in the album
-        Photo firstPhoto = album.getPhotos().get(0);
-        holder.albumFirstImages.setImageResource(firstPhoto.getImageResourceId());
-//
+        if(!album.getPhotos().isEmpty()){
+            Photo firstPhoto = album.getPhotos().get(0);
+            holder.albumFirstImages.setImageResource(firstPhoto.getImageResourceId());
+        }
+
         // open album card view
         holder.albumCardView.setOnClickListener(view -> {
             int adapterPosition = holder.getAdapterPosition();

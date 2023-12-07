@@ -18,8 +18,8 @@ import android.widget.Toast;
 
 import com.example.photos.adapter.AddPhotoAdapter;
 import com.example.photos.adapter.ImagePagerAdapter;
-import com.example.photos.databse.PhotoDatabase;
 import com.example.photos.R;
+import com.example.photos.databse.PreferenceDB;
 import com.example.photos.model.Album;
 import com.example.photos.model.Photo;
 
@@ -76,8 +76,9 @@ public class PhotoDetailsActivity extends AppCompatActivity {
 
         // for select_album_spinner
         Spinner selectAlbumSpinner = findViewById(R.id.select_album_spinner);
-        allAlbums = PhotoDatabase.getAlbums();
-        allPhotos = PhotoDatabase.getAllPhotos();
+        allAlbums = new PreferenceDB(getApplicationContext()).loadAlbums();
+//        allPhotos = PhotoManager.getAllPhotos();
+        allPhotos = selectedAlbum.getPhotos();
         List<String> albumNames = new ArrayList<>();
         for (Album album : allAlbums) {
             albumNames.add(album.getName());
@@ -140,8 +141,9 @@ public class PhotoDetailsActivity extends AppCompatActivity {
                     String tagValue = getTagValue.getText().toString();
                     // Add the tag to the selected photo
                     selectedPhoto.getTags().add(selectedTagCategory + ": " + tagValue);
-                    // Update the PhotoDatabase with the changes
-                    PhotoDatabase.updatePhoto(selectedAlbumName, selectedPhotoIndex, selectedPhoto);
+                    // Update the PhotoManager with the changes
+                    // todo update operation
+//                    PhotoManager.updatePhoto(selectedAlbumName, selectedPhotoIndex, selectedPhoto);
                     // Display all tags for the selected photo in the displayTagValue TextView
                     displayTagValue.setText(formatTags(selectedPhoto.getTags()));
                     getTagValue.setText("");
@@ -163,8 +165,10 @@ public class PhotoDetailsActivity extends AppCompatActivity {
                     String tagValueToRemove = getTagValue.getText().toString();
                     // Remove the tag from the selected photo
                     removeTagFromPhoto(selectedPhoto, tagValueToRemove);
-                    // Update the PhotoDatabase with the changes
-                    PhotoDatabase.updatePhoto(selectedAlbumName, selectedPhotoIndex, selectedPhoto);
+                    // Update the PhotoManager with the changes
+                    // todo update operation
+
+//                    PhotoManager.updatePhoto(selectedAlbumName, selectedPhotoIndex, selectedPhoto);
                     // Display all tags for the selected photo in the displayTagValue TextView
                     displayTagValue.setText(formatTags(selectedPhoto.getTags()));
                     showToast("Tag Removed Successfully ");
@@ -216,7 +220,6 @@ public class PhotoDetailsActivity extends AppCompatActivity {
     // Method to delete the photo
     private void deletePhoto(String albumName, int photoIndex) {
         // Remove the photo from its selected album
-        List<Album> allAlbums = PhotoDatabase.getAlbums();
         Album selectedAlbum = findAlbumByName(albumName);
         if (selectedAlbum != null) {
             List<Photo> albumPhotos = selectedAlbum.getPhotos();

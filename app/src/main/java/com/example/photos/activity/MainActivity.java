@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.InputType;
 import android.widget.Button;
@@ -18,42 +17,41 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.example.photos.adapter.MyRecyclerViewAdapter;
-import com.example.photos.databse.PhotoDatabase;
+import com.example.photos.adapter.AlbumsViewAdapter;
 import com.example.photos.R;
+import com.example.photos.databse.PreferenceDB;
 import com.example.photos.model.Album;
 import com.example.photos.model.Photo;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import java.io.Serializable;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements Application.ActivityLifecycleCallbacks {
 
-    List<Album> demoAlbum;
-    MyRecyclerViewAdapter adapter;
+    private AlbumsViewAdapter adapter;
     private Button rename;
     private Button delete;
     private Button search;
     private ImageView searchButton;
     private EditText getSearchValue;
 
+    private PreferenceDB db;
+    private List<Album> albums;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Load album data from SharedPreferences
-        demoAlbum = loadAlbumData();
+        db = new PreferenceDB(getApplicationContext());
+        albums = db.loadAlbums();
 
         Button createButton = findViewById(R.id.create_album_button);
 
-        // demoAlbum = PhotoDatabase.getAlbums();
+        // demoAlbum = PhotoManager.getAlbums();
         RecyclerView recyclerView = findViewById(R.id.recyclerViewId);
-        adapter = new MyRecyclerViewAdapter(this, demoAlbum);
+        adapter = new AlbumsViewAdapter(this, albums);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -72,17 +70,22 @@ public class MainActivity extends AppCompatActivity implements Application.Activ
                     // Create a new album with the entered name and an empty list of photos
                     Album newAlbum = new Album(albumName);
                     // Add general photos to the album
-                    List<Photo> allPhotos = PhotoDatabase.getAllPhotos();
-                    if (!allPhotos.isEmpty()) {
-                        // Add the first photo from general photos to the album's photo list
-                        newAlbum.getPhotos().add(allPhotos.get(0));
+                    // todo fix:
+//                    List<Photo> allPhotos = PhotoManager.getAllPhotos();
+//                    if (!allPhotos.isEmpty()) {
+//                        // Add the first photo from general photos to the album's photo list
+//                        newAlbum.getPhotos().add(allPhotos.get(0));
+//
+//                    }
+                    // add albums to db
+//                    PhotoManager.addAlbum(newAlbum);
+                    albums.add(newAlbum);
+                    db.saveAlbums(albums);
 
-                    }
-                    // Add the new album to the list
-                    demoAlbum.add(newAlbum);
                     // Notify the adapter about the specific insertion
-                    int position = demoAlbum.indexOf(newAlbum);
+                    int position = albums.indexOf(newAlbum);
                     adapter.notifyItemInserted(position);
+
                 }
             });
             builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
@@ -145,16 +148,17 @@ public class MainActivity extends AppCompatActivity implements Application.Activ
             String searchTerm = getSearchValue.getText().toString().trim().toLowerCase();
             if (!searchTerm.isEmpty()) {
                 List<Photo> searchResults = new ArrayList<>();
+                //todo: fix search
                 // Iterate through all photos and check if the tags match the search term
-                List<Photo> allPhotos = PhotoDatabase.getAllPhotos();
-                for (Photo photo : allPhotos) {
-                    for (String tag : photo.getTags()) {
-                        if (tag.toLowerCase().contains(searchTerm)) {
-                            searchResults.add(photo);
-                            break;  // Break out of inner loop once a match is found for the current photo
-                        }
-                    }
-                }
+//                List<Photo> allPhotos = PhotoManager.getAllPhotos();
+//                for (Photo photo : allPhotos) {
+//                    for (String tag : photo.getTags()) {
+//                        if (tag.toLowerCase().contains(searchTerm)) {
+//                            searchResults.add(photo);
+//                            break;  // Break out of inner loop once a match is found for the current photo
+//                        }
+//                    }
+//                }
                 // TODO: Display or handle the search results as needed
                 // i want to open a new activity  with the search results
                 // Create an Intent to start the SearchResultsActivity
@@ -176,7 +180,8 @@ public class MainActivity extends AppCompatActivity implements Application.Activ
             if (!searchTerm.isEmpty()) {
                 List<Photo> searchResults = new ArrayList<>();
                 // Iterate through all photos and check if the tags match the search term
-                List<Photo> allPhotos = PhotoDatabase.getAllPhotos();
+                //todo: fix search
+/*                List<Photo> allPhotos = PhotoManager.getAllPhotos();
                 for (Photo photo : allPhotos) {
                     for (String tag : photo.getTags()) {
                         if (tag.toLowerCase().contains(searchTerm)) {
@@ -184,7 +189,7 @@ public class MainActivity extends AppCompatActivity implements Application.Activ
                             break;  // Break out of inner loop once a match is found for the current photo
                         }
                     }
-                }
+                }*/
                 // TODO: Display or handle the search results as needed
                 // i want to open a new activity  with the search results
                 // Create an Intent to start the SearchResultsActivity
@@ -205,54 +210,8 @@ public class MainActivity extends AppCompatActivity implements Application.Activ
 
     @Override
     public void onActivityDestroyed(@NonNull Activity activity) {
-        // Save album data when the activity is destroyed
-        if (activity instanceof MainActivity) {
-            MainActivity mainActivity = (MainActivity) activity;
-            mainActivity.saveAlbumData(mainActivity.demoAlbum);
-        }
     }
 
-    // Save the album data in SharedPreferences
-    private void saveAlbumData(List<Album> albums) {
-        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("albumData", convertAlbumsToString(albums));
-        editor.apply();
-    }
-
-    // Load the album data from SharedPreferences
-    // Load the album data from SharedPreferences
-    private List<Album> loadAlbumData() {
-        try {
-            SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
-            String savedAlbumData = sharedPreferences.getString("albumData", "");
-
-            if (!savedAlbumData.isEmpty()) {
-                return convertStringToAlbums(savedAlbumData);
-            } else {
-                return PhotoDatabase.getAlbums();
-            }
-        } catch (Exception e) {
-            // Log the exception
-            e.printStackTrace();
-            return new ArrayList<>(); // Return a default value or handle the exception appropriately
-        }
-    }
-
-
-    // Convert list of albums to a JSON string
-    private String convertAlbumsToString(List<Album> albums) {
-        Gson gson = new Gson();
-        return gson.toJson(albums);
-    }
-
-    // Convert JSON string to a list of albums
-    private List<Album> convertStringToAlbums(String json) {
-        Gson gson = new Gson();
-        Type type = new TypeToken<List<Album>>() {
-        }.getType();
-        return gson.fromJson(json, type);
-    }
 
     @Override
     public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {

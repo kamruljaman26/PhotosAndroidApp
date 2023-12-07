@@ -1,7 +1,5 @@
 package com.example.photos.activity;
 
-import static com.example.photos.databse.PhotoDatabase.findAlbumByName;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -21,7 +19,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.photos.adapter.PhotoAdapter;
 import com.example.photos.R;
-import com.example.photos.databse.PhotoDatabase;
 import com.example.photos.model.Album;
 import com.example.photos.model.Photo;
 
@@ -110,10 +107,12 @@ public class AlbumViewActivity extends AppCompatActivity {
                         // Adapter is already initialized, just notify the dataset changed
                         adapter.notifyItemInserted(position);
                     }
+
+                    // todo:fix
                     // Update the database with the new photo
-                    PhotoDatabase.addPhoto(newPhoto);
+//                    PhotoManager.addPhoto(selectedAlbum,newPhoto);
                     // Update selectedAlbum to reflect the changes
-                    selectedAlbum = findAlbumByName(selectedAlbum.getName());
+//                    selectedAlbum = findAlbumByName(selectedAlbum.getName());
                     setResult(RESULT_OK);
                 } else {
                     // Handle the case when creating a Photo object fails
