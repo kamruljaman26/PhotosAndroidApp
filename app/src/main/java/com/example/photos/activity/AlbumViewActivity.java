@@ -35,7 +35,6 @@ public class AlbumViewActivity extends AppCompatActivity {
     RecyclerView photoRecyclerView;
     PhotoViewAdapter photoViewAdapter;
     private Album selectedAlbum;
-    private PhotoViewAdapter adapter;
     private Button viewSlideShow, addPhoto;
     private static final int REQUEST_CODE_GALLERY = 1;
 
@@ -114,9 +113,9 @@ public class AlbumViewActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
+        // update ui from database for move changed
         List<Album> albums = db.loadAlbums();
         Album album = albums.get(albums.indexOf(selectedAlbum));
-        // If the selected album doesn't have photos, create an empty adapter
         photoViewAdapter = new PhotoViewAdapter(this, album);
         photoRecyclerView.setAdapter(photoViewAdapter);
         photoViewAdapter.notifyDataSetChanged();
@@ -143,7 +142,7 @@ public class AlbumViewActivity extends AppCompatActivity {
             int position = selectedAlbum.getPhotos().indexOf(newPhoto);
 
             // Adapter is already initialized, just notify the dataset changed
-            adapter.notifyItemInserted(position);
+            photoViewAdapter.notifyItemInserted(position);
 
             db.addPhoto(selectedAlbum, newPhoto);
             setResult(RESULT_OK);

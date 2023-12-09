@@ -19,9 +19,7 @@ import com.example.photos.activity.PhotoDetailsActivity;
 import com.example.photos.databse.PreferenceDB;
 import com.example.photos.model.Album;
 import com.example.photos.model.Photo;
-
 import java.io.File;
-import java.util.List;
 
 public class PhotoViewAdapter extends RecyclerView.Adapter<PhotoViewAdapter.PhotoViewHolder> {
 
