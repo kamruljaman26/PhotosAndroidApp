@@ -88,4 +88,10 @@ public class PreferenceDB {
         albums.get(albums.indexOf(album)).setName(name);
         saveAlbums(albums);
     }
+
+    public void removePhoto(Album album, Photo photo) {
+        List<Album> albums = loadAlbums();
+        albums.get(albums.indexOf(album)).getPhotos().remove(album.getPhotos().indexOf(photo));
+        saveAlbums(albums);
+    }
 }

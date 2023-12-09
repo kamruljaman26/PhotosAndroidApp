@@ -71,20 +71,13 @@
 
             </androidx.cardview.widget.CardView>
 
-            <androidx.cardview.widget.CardView
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_marginTop="10dp"
+                android:id="@+id/photoRecyclerView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:cardCornerRadius="10dp"
-                app:cardElevation="5dp">
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/photoRecyclerView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/white">
-                </androidx.recyclerview.widget.RecyclerView>
-
-            </androidx.cardview.widget.CardView>
+                android:layout_height="wrap_content"
+                android:background="@color/white">
+            </androidx.recyclerview.widget.RecyclerView>
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"

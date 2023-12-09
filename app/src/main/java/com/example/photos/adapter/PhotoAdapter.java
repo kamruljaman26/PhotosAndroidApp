@@ -4,14 +4,22 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.photos.R;
 import com.example.photos.activity.PhotoDetailsActivity;
+import com.example.photos.databse.PreferenceDB;
 import com.example.photos.model.Album;
 import com.example.photos.model.Photo;
 
@@ -21,13 +29,13 @@ import java.util.List;
 public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder> {
 
     private Context context;
-    private List<Photo> photos;
     private Album album;
+    private PreferenceDB db;
 
     public PhotoAdapter(Context context, List<Photo> photos ,Album album) {
         this.context = context;
-        this.photos = photos;
         this.album = album;
+        db = new PreferenceDB(context);
     }
 
     @NonNull
@@ -37,7 +45,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         return new PhotoViewHolder(view);
     }
     public void onBindViewHolder(@NonNull PhotoViewHolder holder, int position) {
-        Photo photo = photos.get(position);
+        Photo photo = album.getPhotos().get(position);
 
         if (photo.getUri() != null) {
             // load URI image
@@ -51,6 +59,40 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
             holder.photoImageView.setImageResource(photo.getImageResourceId());
         }
 
+        // handle delete and remove
+        holder.dropdownButton.setOnClickListener(view -> {
+            PopupMenu popupMenu = new PopupMenu(context, holder.dropdownButton);
+            popupMenu.getMenuInflater().inflate(R.menu.popup_remove_menu, popupMenu.getMenu());
+            popupMenu.setOnMenuItemClickListener(menuItem -> {
+                switch (menuItem.getItemId()) {
+                    case R.id.menu_delete: {
+                        // Handle action_item1 click
+                        Toast.makeText(context, "Item 1 clicked", Toast.LENGTH_SHORT).show();
+
+                        // Use an AlertDialog to confirm album deletion
+                        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                        builder.setTitle("Delete Photo");
+                        builder.setMessage("Are you sure you want to delete the photo?");
+                        builder.setPositiveButton("Yes", (dialog, which) -> {
+                            // Delete the selected album
+                            db.removePhoto(album, album.getPhotos().get(position));
+                            album.getPhotos().remove(position);
+                            notifyItemRemoved(position);
+                        });
+
+                        builder.setNegativeButton("No", (dialog, which) -> dialog.cancel());
+                        builder.show();
+                        Toast.makeText(context, "Photo deleted", Toast.LENGTH_SHORT).show();
+
+                        return true;
+                    }
+                    default:
+                        return false;
+                }
+            });
+            popupMenu.show();
+        });
+
         holder.photoImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -61,7 +103,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
                 // Pass the corresponding album
                 intent.putExtra("ALBUM_KEY", album);
                 // Pass the index of the selected photo in the album
-                intent.putExtra("PHOTO_INDEX", photos.indexOf(photo));
+                intent.putExtra("PHOTO_INDEX", album.getPhotos().indexOf(photo));
                 context.startActivity(intent);
             }
         });
@@ -69,13 +111,16 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
 
     @Override
     public int getItemCount() {
-        return photos.size();
+        return album.getPhotos().size();
     }
     public static class PhotoViewHolder extends RecyclerView.ViewHolder {
         ImageView photoImageView;
+        ImageButton dropdownButton;
+
         public PhotoViewHolder(@NonNull View itemView) {
             super(itemView);
             photoImageView = itemView.findViewById(R.id.photoImageView);
+            dropdownButton = itemView.findViewById(R.id.button_dropdown);
         }
     }
 }

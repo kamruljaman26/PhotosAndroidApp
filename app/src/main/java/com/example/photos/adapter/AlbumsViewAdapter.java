@@ -94,10 +94,10 @@ public class AlbumsViewAdapter extends RecyclerView.Adapter<AlbumsViewAdapter.My
         Album album = albums.get(position);
         holder.albumName.setText(album.getName());
 
+        // handle delete and remove
         holder.dropdownButton.setOnClickListener(view -> {
             PopupMenu popupMenu = new PopupMenu(context, holder.dropdownButton);
             popupMenu.getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
-
             popupMenu.setOnMenuItemClickListener(menuItem -> {
                 switch (menuItem.getItemId()) {
                     case R.id.menu_delete: {
