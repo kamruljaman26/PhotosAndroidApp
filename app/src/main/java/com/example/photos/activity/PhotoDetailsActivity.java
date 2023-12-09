@@ -1,10 +1,10 @@
 package com.example.photos.activity;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -16,27 +16,26 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.photos.adapter.AddPhotoAdapter;
-import com.example.photos.adapter.ImagePagerAdapter;
 import com.example.photos.R;
 import com.example.photos.databse.PreferenceDB;
 import com.example.photos.model.Album;
 import com.example.photos.model.Photo;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 public class PhotoDetailsActivity extends AppCompatActivity {
 
-    private Album selectedAlbum;
-    int selectedPhotoIndex;
-    private List<Album> allAlbums;
-    private List<Photo> allPhotos;
-    private ImagePagerAdapter adapter;
-    private String selectedAlbumName;
     private TextView displayTagValue;
     private EditText getTagValue;
     private Button addTag, removeTag;
+
+    private Album parentAlbum, destiantionAlbum;
+    private int selectedPhotoIndex;
+    private Photo photo;
+    private List<Album> albums;
+    private PreferenceDB db;
     private static final int ADD_TAG_REQUEST_CODE = 456;
 
     @Override
@@ -44,8 +43,13 @@ public class PhotoDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_details);
 
+        // init db
+        db = new PreferenceDB(this);
+        albums = db.loadAlbums();
+
         // Set up the back button
         ImageView backButton = findViewById(R.id.backImageViewId);
+        ImageView imageView = findViewById(R.id.imageViewID);
         TextView backButtonText = findViewById(R.id.backTextViewId);
         backButton.setOnClickListener(view -> onBackPressed());
         backButtonText.setOnClickListener(view -> onBackPressed());
@@ -56,49 +60,65 @@ public class PhotoDetailsActivity extends AppCompatActivity {
         addTag = findViewById(R.id.add_tag_button);
         removeTag = findViewById(R.id.remove_tag_button);
 
-        // for Image Slide Show
+        // init move button
+        Button moveButton = findViewById(R.id.move_button);
+        moveButton.setOnClickListener(view -> {
+            if (destiantionAlbum != null) {
+                Photo remove = albums.get(albums.indexOf(parentAlbum)).remove(photo);
+                if (remove != null)
+                    albums.get(albums.indexOf(destiantionAlbum)).addPhoto(photo);
+                db.saveAlbums(albums);
+
+                Toast.makeText(getApplicationContext(),
+                        "Moved Successfully!",Toast.LENGTH_SHORT).show();
+            }else {
+                Toast.makeText(getApplicationContext(),
+                        "Problem with moved!",Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        /**
+         * show received images
+         */
         Intent intent = getIntent();
         if (intent != null) {
-            selectedAlbum = (Album) intent.getSerializableExtra("ALBUM_KEY");
+
+            // revise data form intent
+            parentAlbum = (Album) intent.getSerializableExtra("ALBUM_KEY");
+            photo = (Photo) intent.getSerializableExtra("PHOTO_KEY");
             selectedPhotoIndex = intent.getIntExtra("PHOTO_INDEX", -1);
-            if (selectedAlbum != null && selectedPhotoIndex != -1) {
-                List<Photo> albumPhotos = selectedAlbum.getPhotos();
-                // Initialize the ViewPager and set the adapter
-                ViewPager viewPager = findViewById(R.id.photoDetailImageViewPager);
-                adapter = new ImagePagerAdapter(albumPhotos);
-                viewPager.setAdapter(adapter);
-                // Set the current item of the ViewPager to display the selected photo first
-                viewPager.setCurrentItem(selectedPhotoIndex);
-                // Update the displayed tags
-                updateDisplayedTags();
+
+            // load photo
+            if (parentAlbum != null && selectedPhotoIndex != -1) {
+                // set image
+                Photo photo = parentAlbum.getPhotos().get(selectedPhotoIndex);
+                if (photo.getUri() == null)
+                    imageView.setImageResource(photo.getImageResourceId());
+                else {
+                    // load URI image
+                    File imgFile = new File(photo.getUri());
+                    if (imgFile.exists()) {
+                        Bitmap bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                        imageView.setImageBitmap(bitmap);
+                    }
+                }
             }
         }
 
         // for select_album_spinner
         Spinner selectAlbumSpinner = findViewById(R.id.select_album_spinner);
-        allAlbums = new PreferenceDB(getApplicationContext()).loadAlbums();
-//        allPhotos = PhotoManager.getAllPhotos();
-        allPhotos = selectedAlbum.getPhotos();
         List<String> albumNames = new ArrayList<>();
-        for (Album album : allAlbums) {
+        for (Album album : albums) {
             albumNames.add(album.getName());
         }
-
-        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, albumNames);
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(this, R.layout.custom_spinner_item, albumNames);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         selectAlbumSpinner.setAdapter(spinnerAdapter);
-
         selectAlbumSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-
-                selectedAlbumName = albumNames.get(position);
-                Button addButton = findViewById(R.id.add_button);
-                Button deleteButton = findViewById(R.id.delete_button);
-                Button moveButton = findViewById(R.id.move_button);
-                addButton.setOnClickListener(v -> onAddButtonClicked());
-                deleteButton.setOnClickListener(v -> onDeleteButtonClicked());
-                moveButton.setOnClickListener(v -> onMoveButtonClicked());
+                destiantionAlbum = albums.get(position);
+//                Toast.makeText(getApplicationContext(), ""+destiantionAlbum,Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -106,6 +126,8 @@ public class PhotoDetailsActivity extends AppCompatActivity {
                 // Do nothing here
             }
         });
+
+
         Spinner tagSpinner = (Spinner) findViewById(R.id.tag_category_spinner);
         ArrayAdapter<CharSequence> adapterTag = ArrayAdapter.createFromResource(
                 this,
@@ -113,14 +135,14 @@ public class PhotoDetailsActivity extends AppCompatActivity {
                 android.R.layout.simple_spinner_item
         );
         // Tag Section
-        selectedAlbum = findAlbumByName(selectedAlbumName);
-        if (selectedAlbum != null && selectedPhotoIndex != -1) {
+//        parentAlbum = findAlbumByName(selectedAlbumName);
+        if (parentAlbum != null && selectedPhotoIndex != -1) {
             // Get the selected photo
-            List<Photo> albumPhotos = selectedAlbum.getPhotos();
+            List<Photo> albumPhotos = parentAlbum.getPhotos();
             if (selectedPhotoIndex >= 0 && selectedPhotoIndex < albumPhotos.size()) {
                 Photo selectedPhoto = albumPhotos.get(selectedPhotoIndex);
                 // Display all tags for the selected photo in the displayTagValue TextView
-                displayTagValue.setText(formatTags(selectedPhoto.getTags()));
+//                displayTagValue.setText(formatTags(selectedPhoto.getTags()));
             }
         }
 
@@ -130,22 +152,22 @@ public class PhotoDetailsActivity extends AppCompatActivity {
         tagSpinner.setAdapter(adapterTag);
         addTag.setOnClickListener(view -> {
             // Get the selected album
-            selectedAlbum = findAlbumByName(selectedAlbumName);
-            if (selectedAlbum != null && selectedPhotoIndex != -1) {
+//            parentAlbum = findAlbumByName(selectedAlbumName);
+            if (parentAlbum != null && selectedPhotoIndex != -1) {
                 // Get the selected photo
-                List<Photo> albumPhotos = selectedAlbum.getPhotos();
+                List<Photo> albumPhotos = parentAlbum.getPhotos();
                 if (selectedPhotoIndex >= 0 && selectedPhotoIndex < albumPhotos.size()) {
                     Photo selectedPhoto = albumPhotos.get(selectedPhotoIndex);
                     // Get the selected tag category and tag value
                     String selectedTagCategory = tagSpinner.getSelectedItem().toString();
                     String tagValue = getTagValue.getText().toString();
                     // Add the tag to the selected photo
-                    selectedPhoto.getTags().add(selectedTagCategory + ": " + tagValue);
+//                    selectedPhoto.getTags().add(selectedTagCategory + ": " + tagValue);
                     // Update the PhotoManager with the changes
                     // todo update operation
 //                    PhotoManager.updatePhoto(selectedAlbumName, selectedPhotoIndex, selectedPhoto);
                     // Display all tags for the selected photo in the displayTagValue TextView
-                    displayTagValue.setText(formatTags(selectedPhoto.getTags()));
+//                    displayTagValue.setText(formatTags(selectedPhoto.getTags()));
                     getTagValue.setText("");
                     showToast("Tag Added Successfully ");
                 }
@@ -155,10 +177,10 @@ public class PhotoDetailsActivity extends AppCompatActivity {
         // Remove Tag button
         removeTag.setOnClickListener(view -> {
             // Get the selected album
-            selectedAlbum = findAlbumByName(selectedAlbumName);
-            if (selectedAlbum != null && selectedPhotoIndex != -1) {
+//            parentAlbum = findAlbumByName(selectedAlbumName);
+            if (parentAlbum != null && selectedPhotoIndex != -1) {
                 // Get the selected photo
-                List<Photo> albumPhotos = selectedAlbum.getPhotos();
+                List<Photo> albumPhotos = parentAlbum.getPhotos();
                 if (selectedPhotoIndex >= 0 && selectedPhotoIndex < albumPhotos.size()) {
                     Photo selectedPhoto = albumPhotos.get(selectedPhotoIndex);
                     // Get the tag value to be removed
@@ -170,7 +192,7 @@ public class PhotoDetailsActivity extends AppCompatActivity {
 
 //                    PhotoManager.updatePhoto(selectedAlbumName, selectedPhotoIndex, selectedPhoto);
                     // Display all tags for the selected photo in the displayTagValue TextView
-                    displayTagValue.setText(formatTags(selectedPhoto.getTags()));
+//                    displayTagValue.setText(formatTags(selectedPhoto.getTags()));
                     showToast("Tag Removed Successfully ");
                 }
             }
@@ -188,34 +210,6 @@ public class PhotoDetailsActivity extends AppCompatActivity {
         return formattedTags.toString().trim();
     }
 
-    private void onAddButtonClicked() {
-        // Get the selected album
-        Album selectedAlbum = findAlbumByName(selectedAlbumName);
-
-        if (selectedAlbum != null) {
-            // Create a dialog or launch a new activity to allow photo selection
-            showPhotoSelectionDialog(selectedAlbum);
-        }
-    }
-
-    private void onDeleteButtonClicked() {
-
-        if (selectedAlbumName != null && selectedPhotoIndex != -1) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Confirm Deletion");
-            builder.setMessage("Are you sure you want to delete this photo?");
-            builder.setPositiveButton("Yes", (dialog, which) -> {
-                // User clicked "Yes," proceed with deletion
-                deletePhoto(selectedAlbumName, selectedPhotoIndex);
-            });
-            builder.setNegativeButton("No", (dialog, which) -> {
-                // User clicked "No," do nothing
-                dialog.dismiss();
-            });
-            // Show the alert dialog
-            builder.show();
-        }
-    }
 
     // Method to delete the photo
     private void deletePhoto(String albumName, int photoIndex) {
@@ -226,92 +220,19 @@ public class PhotoDetailsActivity extends AppCompatActivity {
             if (photoIndex >= 0 && photoIndex < albumPhotos.size()) {
                 // Remove the photo from the selected album
                 albumPhotos.remove(photoIndex);
-                // Notify the adapter about the data change in the ViewPager
-                adapter.notifyDataSetChanged();
             }
-        }
-    }
-
-    private void onMoveButtonClicked() {
-        // Check if the intent is not null
-        Intent intent = getIntent();
-        if (intent != null) {
-            // Retrieve album and photo index from the intent
-            selectedAlbum = (Album) intent.getSerializableExtra("ALBUM_KEY");
-            selectedPhotoIndex = intent.getIntExtra("PHOTO_INDEX", -1);
-            // Check if the album and photo index are valid
-            if (selectedAlbum != null && selectedPhotoIndex != -1) {
-                // Retrieve album photos
-                List<Photo> albumPhotos = selectedAlbum.getPhotos();
-                // Initialize the ViewPager and set the adapter
-                ViewPager viewPager = findViewById(R.id.photoDetailImageViewPager);
-                adapter = new ImagePagerAdapter(albumPhotos);
-                viewPager.setAdapter(adapter);
-                // Set the current item of the ViewPager to display the selected photo first
-                viewPager.setCurrentItem(selectedPhotoIndex);
-                // Update the displayed tags
-                updateDisplayedTags();
-                // Get the selected album
-                Album destinationAlbum = findAlbumByName(selectedAlbumName);
-                // Check if the destination album is valid
-                if (destinationAlbum != null) {
-                    // Remove the photo from its original album
-                    List<Photo> sourceAlbumPhotos = selectedAlbum.getPhotos();
-                    // Check if the photo index is valid
-                    if (selectedPhotoIndex >= 0 && selectedPhotoIndex < sourceAlbumPhotos.size()) {
-                        // Get the photo that needs to be moved
-                        Photo movedPhoto = sourceAlbumPhotos.remove(selectedPhotoIndex);
-                        // Add the photo to the destination album
-                        destinationAlbum.getPhotos().add(movedPhoto);
-                        // Notify the adapter about the data change in the ViewPager
-                        adapter.notifyDataSetChanged();
-                        // Show Toast messages
-                        showToast("Photo moved to " + destinationAlbum.getName());
-                        // Delete the photo from the original album
-                        deletePhoto(selectedAlbum.getName(), selectedPhotoIndex);
-                        // Optionally, update the displayed tags after the move
-                        updateDisplayedTags();
-                    } else {
-                        showToast("Invalid photo index in the source album");
-                    }
-                } else {
-                    showToast("Invalid destination album");
-                }
-            } else {
-                showToast("Invalid album or photo index");
-            }
-        } else {
-            showToast("Intent is null");
         }
     }
 
 
     // Helper method to find an album by name
     private Album findAlbumByName(String albumName) {
-        for (Album album : allAlbums) {
+        for (Album album : albums) {
             if (album.getName().equals(albumName)) {
                 return album;
             }
         }
         return null;
-    }
-
-    private void showPhotoSelectionDialog(final Album selectedAlbum) {
-        // Implement a dialog or launch a new activity to display a list of photos
-        // and allow the user to select one.
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Select a Photo");
-        // Create a custom adapter to display photos with image resource IDs
-        AddPhotoAdapter photoAdapter = new AddPhotoAdapter(this, allPhotos);
-        builder.setAdapter(photoAdapter, (dialog, which) -> {
-            // User selected a photo, add it to the selected album
-            Photo selectedPhoto = allPhotos.get(which);
-            // Add the photo to the currently selected album
-            selectedAlbum.getPhotos().add(selectedPhoto);
-            // Notify the adapter about the data change in the ViewPager
-            adapter.notifyDataSetChanged();
-        });
-        builder.show();
     }
 
     @Override
@@ -335,25 +256,25 @@ public class PhotoDetailsActivity extends AppCompatActivity {
     }
 
     private void updateDisplayedTags() {
-        if (selectedAlbum != null && selectedPhotoIndex != -1) {
-            List<Photo> albumPhotos = selectedAlbum.getPhotos();
+        if (parentAlbum != null && selectedPhotoIndex != -1) {
+            List<Photo> albumPhotos = parentAlbum.getPhotos();
             if (selectedPhotoIndex >= 0 && selectedPhotoIndex < albumPhotos.size()) {
                 Photo selectedPhoto = albumPhotos.get(selectedPhotoIndex);
-                displayTagValue.setText(formatTags(selectedPhoto.getTags()));
+//                displayTagValue.setText(formatTags(selectedPhoto.getTags()));
                 showToast("Tags updated successfully");
             }
         }
     }
 
     private void removeTagFromPhoto(Photo selectedPhoto, String tagValueToRemove) {
-        List<String> photoTags = selectedPhoto.getTags();
-        for (String tag : photoTags) {
-            if (tag.contains(tagValueToRemove)) {
-                // Remove the tag from the list
-                photoTags.remove(tag);
-                break; // Break the loop after removing the first occurrence
-            }
-        }
+//        List<String> photoTags = selectedPhoto.getTags();
+//        for (String tag : photoTags) {
+//            if (tag.contains(tagValueToRemove)) {
+//                // Remove the tag from the list
+//                photoTags.remove(tag);
+//                break; // Break the loop after removing the first occurrence
+//            }
+//        }
     }
 
     private void showToast(String message) {

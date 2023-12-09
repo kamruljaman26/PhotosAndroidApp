@@ -21,6 +21,15 @@ public class Album implements Serializable {
         this.photos = photos;
     }
 
+    public Photo remove(Photo photo){
+        int i = photos.indexOf(photo);
+        if (i > -1){
+            photos.remove(i);
+            return photo;
+        }
+        return null;
+    }
+
     public String getName() {
         return name;
     }

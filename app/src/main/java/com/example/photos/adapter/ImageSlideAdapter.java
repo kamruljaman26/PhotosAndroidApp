@@ -1,6 +1,5 @@
 package com.example.photos.adapter;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.view.View;
@@ -12,11 +11,11 @@ import com.example.photos.model.Photo;
 import java.io.File;
 import java.util.List;
 
-public class ImagePagerAdapter extends PagerAdapter {
+public class ImageSlideAdapter extends PagerAdapter {
 
     private List<Photo> photos;
 
-    public ImagePagerAdapter(List<Photo> photos) {
+    public ImageSlideAdapter(List<Photo> photos) {
         this.photos = photos;
     }
 

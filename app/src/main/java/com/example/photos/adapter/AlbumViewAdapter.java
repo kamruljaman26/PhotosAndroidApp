@@ -5,9 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.text.InputType;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -16,12 +14,10 @@ import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.photos.R;
 import com.example.photos.activity.AlbumViewActivity;
 import com.example.photos.databse.PreferenceDB;
@@ -31,9 +27,8 @@ import com.example.photos.model.Photo;
 import java.io.File;
 import java.util.List;
 
-public class AlbumsViewAdapter extends RecyclerView.Adapter<AlbumsViewAdapter.MyRecyclerViewHolder> {
+public class AlbumViewAdapter extends RecyclerView.Adapter<AlbumViewAdapter.MyRecyclerViewHolder> {
 
-    private RecyclerView recyclerView;
     private Context context;
     private List<Album> albums;
     private PreferenceDB db;
@@ -54,33 +49,10 @@ public class AlbumsViewAdapter extends RecyclerView.Adapter<AlbumsViewAdapter.My
         }
     }
 
-    public AlbumsViewAdapter(Context context, List<Album> albums) {
+    public AlbumViewAdapter(Context context, List<Album> albums) {
         this.context = context;
         this.albums = albums;
         db = new PreferenceDB(context);
-
-/*        gestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
-            @Override
-            public boolean onDoubleTap(MotionEvent e) {
-                int position = getAdapterPositionFromView(e.getX(), e.getY());
-                if (position != RecyclerView.NO_POSITION) {
-                    Album selectedAlbum = albums.get(position);
-                    Intent intent = new Intent(context, AlbumViewActivity.class);
-                    intent.putExtra("album", selectedAlbum);
-                    context.startActivity(intent);
-                    return true;
-                }
-                return false;
-            }
-        });*/
-    }
-
-    private int getAdapterPositionFromView(float x, float y) {
-        View childView = recyclerView.findChildViewUnder(x, y);
-        if (childView != null) {
-            return recyclerView.getChildAdapterPosition(childView);
-        }
-        return RecyclerView.NO_POSITION;
     }
 
     @NonNull
@@ -173,19 +145,6 @@ public class AlbumsViewAdapter extends RecyclerView.Adapter<AlbumsViewAdapter.My
             intent.putExtra("album", selectedAlbum);
             view.getContext().startActivity(intent);
         });
-
-//        // Set up touch listener on the card view
-//        holder.albumCardView.setOnTouchListener((view, event) -> {
-//            if (gestureDetector.onTouchEvent(event)) {
-//                // Double-tap action
-//                return true; // to consume the event
-//            } else if (event.getAction() == MotionEvent.ACTION_UP) {
-//                // Single tap action
-//                view.performClick();
-//                return true; // to consume the event
-//            }
-//            return false;
-//        });
     }
 
     @Override

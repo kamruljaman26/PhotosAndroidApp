@@ -1,7 +1,5 @@
 package com.example.photos.activity;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -10,19 +8,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
-import android.app.Activity;
-import android.app.Application;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.InputType;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.example.photos.adapter.AlbumsViewAdapter;
+import com.example.photos.adapter.AlbumViewAdapter;
 import com.example.photos.R;
 import com.example.photos.databse.PreferenceDB;
 import com.example.photos.model.Album;
@@ -39,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ImageView searchButton;
     private EditText getSearchValue;
-    private AlbumsViewAdapter adapter;
+    private AlbumViewAdapter adapter;
 
     private PreferenceDB db;
     private List<Album> albums;
@@ -68,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
         search = findViewById(R.id.search_button_b);
 
         recyclerView = findViewById(R.id.recyclerViewId);
-        adapter = new AlbumsViewAdapter(this, albums);
+        adapter = new AlbumViewAdapter(this, albums);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -79,54 +74,6 @@ public class MainActivity extends AppCompatActivity {
             handleCrateButton();
         });
 
-
-        /**
-         * todo: later
-         */
-        // rename
-//        rename.setOnClickListener(view -> {
-/*            int selectedAlbumIndex = adapter.getSelectedAlbumIndex();
-            if (selectedAlbumIndex != RecyclerView.NO_POSITION) {
-                // Use an AlertDialog to get user input for the new album name
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("Rename Album");
-                final EditText input = new EditText(this);
-                input.setInputType(InputType.TYPE_CLASS_TEXT);
-                builder.setView(input);
-                builder.setPositiveButton("OK", (dialog, which) -> {
-                    String newAlbumName = input.getText().toString().trim();
-                    if (!newAlbumName.isEmpty()) {
-                        // Rename the selected album
-                        adapter.renameSelectedAlbum(newAlbumName);
-                    }
-                });
-                builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
-                builder.show();
-            } else {
-                Toast.makeText(this, "No album selected", Toast.LENGTH_SHORT).show();
-            }*/
-//        });
-
-        // delete
-//        delete.setOnClickListener(view -> {
-/*            int selectedAlbumIndex = adapter.getSelectedAlbumIndex();
-            if (selectedAlbumIndex != RecyclerView.NO_POSITION) {
-                // Use an AlertDialog to confirm album deletion
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("Delete Album");
-                builder.setMessage("Are you sure you want to delete this album?");
-                builder.setPositiveButton("Yes", (dialog, which) -> {
-                    // Delete the selected album
-                    adapter.deleteSelectedAlbum();
-                    Toast.makeText(this, "Album deleted", Toast.LENGTH_SHORT).show();
-                });
-
-                builder.setNegativeButton("No", (dialog, which) -> dialog.cancel());
-                builder.show();
-            } else {
-                Toast.makeText(this, "No album selected", Toast.LENGTH_SHORT).show();
-            }*/
-//        });
 
         //Searches apply to photos across all albums, not just to the album that may be open.
         search.setOnClickListener(view -> {
@@ -243,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         albums = db.loadAlbums();
-        adapter = new AlbumsViewAdapter(this, albums);
+        adapter = new AlbumViewAdapter(this, albums);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         super.onResume();

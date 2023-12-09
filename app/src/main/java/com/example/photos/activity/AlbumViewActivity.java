@@ -7,7 +7,6 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import android.provider.MediaStore;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -17,7 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.photos.adapter.PhotoAdapter;
+import com.example.photos.adapter.PhotoViewAdapter;
 import com.example.photos.R;
 import com.example.photos.databse.PreferenceDB;
 import com.example.photos.model.Album;
@@ -33,8 +32,10 @@ import java.util.List;
 
 public class AlbumViewActivity extends AppCompatActivity {
 
+    RecyclerView photoRecyclerView;
+    PhotoViewAdapter photoViewAdapter;
     private Album selectedAlbum;
-    private PhotoAdapter adapter;
+    private PhotoViewAdapter adapter;
     private Button viewSlideShow, addPhoto;
     private static final int REQUEST_CODE_GALLERY = 1;
 
@@ -55,42 +56,42 @@ public class AlbumViewActivity extends AppCompatActivity {
         backButton.setOnClickListener(view -> onBackPressed());
         backButtonText.setOnClickListener(view -> onBackPressed());
 
-        // all button initializes
+        // initializes
         viewSlideShow = findViewById(R.id.viewSlide_album_button);
+        photoRecyclerView = findViewById(R.id.photoRecyclerView);
+        photoRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         addPhoto = findViewById(R.id.add_photo_button);
 
+        // receive data
         Intent intent = getIntent();
         if (intent != null) {
             selectedAlbum = (Album) intent.getSerializableExtra("album");
-            // Check if selectedAlbum is not null and has photos
             if (selectedAlbum != null) {
                 // Check if the selected album has photos
                 if (selectedAlbum.getPhotos() != null && !selectedAlbum.getPhotos().isEmpty()) {
-                    List<Photo> albumPhotos = selectedAlbum.getPhotos();
-                    PhotoAdapter photoAdapter = new PhotoAdapter(this, albumPhotos, selectedAlbum);
-                    RecyclerView photoRecyclerView = findViewById(R.id.photoRecyclerView);
-                    photoRecyclerView.setAdapter(photoAdapter);
-                    photoRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+                    photoViewAdapter = new PhotoViewAdapter(this, selectedAlbum);
+                    photoRecyclerView.setAdapter(photoViewAdapter);
                 } else {
                     // If the selected album doesn't have photos, create an empty adapter
-                    PhotoAdapter photoAdapter = new PhotoAdapter(this, new ArrayList<>(), selectedAlbum);
-                    RecyclerView photoRecyclerView = findViewById(R.id.photoRecyclerView);
-                    photoRecyclerView.setAdapter(photoAdapter);
-                    photoRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+                    photoViewAdapter = new PhotoViewAdapter(this, selectedAlbum);
+                    photoRecyclerView.setAdapter(photoViewAdapter);
                 }
             }
         }
+
         viewSlideShow.setOnClickListener(view -> {
-            Intent intent1 = new Intent(AlbumViewActivity.this, ViewSlideShow.class);
+            Intent intent1 = new Intent(AlbumViewActivity.this, ImageSlideActivity.class);
             intent1.putExtra("ALBUM_KEY", selectedAlbum);
             startActivity(intent1);
         });
+
         addPhoto.setOnClickListener(view -> {
             // here I want to add photo from device gallery photo to selected album
             Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             startActivityForResult(galleryIntent, REQUEST_CODE_GALLERY);
         });
     }
+
 
     private String saveImageToInternalStorage(Uri uri, Context context) {
         String fileName = "myImage_" + System.currentTimeMillis() + ".jpg"; // or use appropriate format
@@ -111,6 +112,16 @@ public class AlbumViewActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onResume() {
+        List<Album> albums = db.loadAlbums();
+        Album album = albums.get(albums.indexOf(selectedAlbum));
+        // If the selected album doesn't have photos, create an empty adapter
+        photoViewAdapter = new PhotoViewAdapter(this, album);
+        photoRecyclerView.setAdapter(photoViewAdapter);
+        photoViewAdapter.notifyDataSetChanged();
+        super.onResume();
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -122,35 +133,20 @@ public class AlbumViewActivity extends AppCompatActivity {
             // copy and store to image to local storage
             String internalUri = saveImageToInternalStorage(selectedImageUri, this);
 
-            // Check if selectedAlbum is not null
-            if (selectedAlbum != null) {
-                // Create a new photo from the URI
-                Photo newPhoto = new Photo(internalUri);
-                if (newPhoto != null) {
-                    // Add the photo to the selected album
-                    selectedAlbum.addPhoto(newPhoto);
-                    // Update the adapter with the new photo
-                    int position = selectedAlbum.getPhotos().indexOf(newPhoto);
-                    // Check if the adapter is already initialized
-                    if (adapter == null) {
-                        // Initialize the adapter with the dataset
-                        adapter = new PhotoAdapter(this, selectedAlbum.getPhotos(), selectedAlbum);
-                        // Set the adapter to your RecyclerView
-                        RecyclerView photoRecyclerView = findViewById(R.id.photoRecyclerView);
-                        photoRecyclerView.setAdapter(adapter);
-                    } else {
-                        // Adapter is already initialized, just notify the dataset changed
-                        adapter.notifyItemInserted(position);
-                    }
+            // Create a new photo from the URI
+            Photo newPhoto = new Photo(internalUri);
 
-                    db.addPhoto(selectedAlbum, newPhoto);
+            // Add the photo to the selected album
+            selectedAlbum.addPhoto(newPhoto);
 
-                    setResult(RESULT_OK);
-                } else {
-                    // Handle the case when creating a Photo object fails
-                    Toast.makeText(this, "Error: Unable to create a Photo object", Toast.LENGTH_SHORT).show();
-                }
-            }
+            // Update the adapter with the new photo
+            int position = selectedAlbum.getPhotos().indexOf(newPhoto);
+
+            // Adapter is already initialized, just notify the dataset changed
+            adapter.notifyItemInserted(position);
+
+            db.addPhoto(selectedAlbum, newPhoto);
+            setResult(RESULT_OK);
         }
     }
 }

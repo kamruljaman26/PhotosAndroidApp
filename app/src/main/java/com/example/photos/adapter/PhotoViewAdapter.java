@@ -4,16 +4,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
@@ -26,13 +23,13 @@ import com.example.photos.model.Photo;
 import java.io.File;
 import java.util.List;
 
-public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder> {
+public class PhotoViewAdapter extends RecyclerView.Adapter<PhotoViewAdapter.PhotoViewHolder> {
 
     private Context context;
     private Album album;
     private PreferenceDB db;
 
-    public PhotoAdapter(Context context, List<Photo> photos ,Album album) {
+    public PhotoViewAdapter(Context context, Album album) {
         this.context = context;
         this.album = album;
         db = new PreferenceDB(context);
@@ -66,9 +63,6 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
             popupMenu.setOnMenuItemClickListener(menuItem -> {
                 switch (menuItem.getItemId()) {
                     case R.id.menu_delete: {
-                        // Handle action_item1 click
-                        Toast.makeText(context, "Item 1 clicked", Toast.LENGTH_SHORT).show();
-
                         // Use an AlertDialog to confirm album deletion
                         AlertDialog.Builder builder = new AlertDialog.Builder(context);
                         builder.setTitle("Delete Photo");
@@ -93,6 +87,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
             popupMenu.show();
         });
 
+        // move to details activity
         holder.photoImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

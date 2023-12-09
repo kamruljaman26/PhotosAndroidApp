@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="20dp"
-    tools:context=".activity.ViewSlideShow">
+    tools:context=".activity.ImageSlideActivity">
 
     <!-- Back Button -->
     <androidx.cardview.widget.CardView

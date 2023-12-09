@@ -9,7 +9,7 @@ import java.util.Objects;
 
 // Photos Pojo
 public class Photo implements Serializable {
-    private List<String> tags;
+    private List<Tag> tags;
     private int imageResourceId;
     private String internalUri;
 
@@ -39,13 +39,6 @@ public class Photo implements Serializable {
         return Objects.hash(imageResourceId, internalUri);
     }
 
-    public List<String> getTags() {
-        return tags;
-    }
-
-    public void setTags(List<String> tags) {
-        this.tags = tags;
-    }
 
     public int getImageResourceId() {
         return imageResourceId;

@@ -5,12 +5,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.photos.R;
-import com.example.photos.adapter.SearchResultsAdapter;
+import com.example.photos.adapter.SearchAdapter;
 import com.example.photos.model.Photo;
 
 import java.util.List;
@@ -18,7 +17,7 @@ import java.util.List;
 public class SearchActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
-    private SearchResultsAdapter adapter;
+    private SearchAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +30,7 @@ public class SearchActivity extends AppCompatActivity {
         backButtonText.setOnClickListener(view -> onBackPressed());
 
         recyclerView = findViewById(R.id.searchPhotoRecycler);
-        adapter = new SearchResultsAdapter();
+        adapter = new SearchAdapter();
         // Get the search results from the Intent
         List<Photo> searchResults = (List<Photo>) getIntent().getSerializableExtra("searchResults");
 

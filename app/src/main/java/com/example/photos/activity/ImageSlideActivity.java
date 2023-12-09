@@ -2,7 +2,6 @@ package com.example.photos.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -10,16 +9,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
 import com.example.photos.R;
-import com.example.photos.adapter.ImagePagerAdapter;
+import com.example.photos.adapter.ImageSlideAdapter;
 import com.example.photos.model.Album;
 import com.example.photos.model.Photo;
 
 import java.util.List;
 
-public class ViewSlideShow extends AppCompatActivity {
+public class ImageSlideActivity extends AppCompatActivity {
 
     private Album selectedAlbum;
-    ImagePagerAdapter adapter;
+    ImageSlideAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,9 +38,9 @@ public class ViewSlideShow extends AppCompatActivity {
             // Check if selectedAlbum is not null and has photos
             if (selectedAlbum != null && selectedAlbum.getPhotos() != null && !selectedAlbum.getPhotos().isEmpty()) {
                 List<Photo> albumPhotos = selectedAlbum.getPhotos();
-                // Pass the photos to the ImagePagerAdapter
-                adapter = new ImagePagerAdapter(albumPhotos);
-                // Set up the ViewPager and ImagePagerAdapter
+                // Pass the photos to the ImageSlideAdapter
+                adapter = new ImageSlideAdapter(albumPhotos);
+                // Set up the ViewPager and ImageSlideAdapter
                 ViewPager viewPager = findViewById(R.id.photoDetailImageViewPager);
                 viewPager.setAdapter(adapter);
             }

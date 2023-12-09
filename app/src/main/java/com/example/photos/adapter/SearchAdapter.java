@@ -13,7 +13,7 @@ import com.example.photos.model.Photo;
 
 import java.util.List;
 
-public class SearchResultsAdapter extends RecyclerView.Adapter<SearchResultsAdapter.ViewHolder> {
+public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder> {
 
     private List<Photo> searchResults;
 

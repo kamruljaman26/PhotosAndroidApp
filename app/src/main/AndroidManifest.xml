@@ -27,7 +27,7 @@
             android:name=".activity.PhotoDetailsActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.ViewSlideShow"
+            android:name=".activity.ImageSlideActivity"
             android:exported="false" />
         <activity
             android:name=".activity.AlbumViewActivity"

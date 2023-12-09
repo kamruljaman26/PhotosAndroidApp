@@ -138,7 +138,7 @@
                         android:id="@+id/create_album_button"
                         android:layout_width="200dp"
                         android:layout_height="wrap_content"
-                        android:text="Create"
+                        android:text="Create Album"
                         android:textAlignment="center"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"

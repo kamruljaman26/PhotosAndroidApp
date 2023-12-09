@@ -58,26 +58,24 @@
             </androidx.cardview.widget.CardView>
 
             <!-- Image Slider Section  -->
-
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
+                android:layout_height="200dp"
                 android:layout_marginTop="20dp"
                 app:cardCornerRadius="10dp"
                 app:cardElevation="5dp">
-
-                <androidx.viewpager.widget.ViewPager
-                    android:id="@+id/photoDetailImageViewPager"
+                <ImageView
+                    android:id="@+id/imageViewID"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                </androidx.viewpager.widget.ViewPager>
+                    android:layout_height="match_parent">
+                </ImageView>
 
             </androidx.cardview.widget.CardView>
 
             <!-- Back Button -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="150dp"
                 android:layout_marginTop="20dp"
                 android:background="@color/black"
                 app:cardBackgroundColor="@color/black"
@@ -86,106 +84,63 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
+
                     <TextView
+                        android:id="@+id/textView2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="20dp"
                         android:layout_marginTop="12dp"
-                        android:text="Photo Details"
+                        android:text="Move Photo"
                         android:textColor="@color/white"
-                        android:textSize="16sp"
+                        android:textSize="18sp"
                         android:textStyle="bold"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/textView_album_name"
+                        android:layout_width="100dp"
+                        android:layout_height="54dp"
+                        android:layout_marginStart="20dp"
+                        android:gravity="center"
+                        android:text="Album Name"
+                        android:textAlignment="center"
+                        android:textColor="@color/white"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textView2">
+
+                    </TextView>
+
+                    <Spinner
+                        android:id="@+id/select_album_spinner"
+                        android:layout_width="200dp"
+                        android:layout_height="54dp"
+                        android:layout_marginEnd="20dp"
+                        android:backgroundTint="@color/white"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/textView_album_name"
+                        app:layout_constraintTop_toTopOf="@+id/textView_album_name"></Spinner>
+
+                    <Button
+                        android:id="@+id/move_button"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginEnd="20dp"
+                        android:layout_marginBottom="16dp"
+                        android:text="Move"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent">
+
+                    </Button>
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </androidx.cardview.widget.CardView>
 
             <!-- move and copy Section -->
 
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="150dp"
-                android:layout_marginTop="20dp"
-                app:cardCornerRadius="10dp"
-                app:cardElevation="5dp">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@color/black"
-                    >
-
-                    <TextView
-                        android:layout_marginTop="4dp"
-                        android:id="@+id/textView_album_name"
-                        android:layout_width="100dp"
-                        android:layout_height="54dp"
-                        android:layout_marginStart="10dp"
-                        android:gravity="center"
-                        android:textColor="@color/white"
-                        android:text="Album Name"
-                        android:textAlignment="center"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
-
-                    </TextView>
-
-                    <Spinner
-                        android:id="@+id/select_album_spinner"
-                        android:layout_marginTop="4dp"
-                        android:layout_width="200dp"
-                        android:layout_height="54dp"
-                        android:backgroundTint="@color/white"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/textView_album_name"
-                        app:layout_constraintTop_toTopOf="parent">
-                    </Spinner>
-
-                    <Button
-                        android:id="@+id/move_button"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="50dp"
-                        android:layout_marginBottom="20dp"
-                        android:text="Move"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.24"
-                        app:layout_constraintStart_toEndOf="@+id/delete_button">
-
-                    </Button>
-
-                    <Button
-                        android:id="@+id/add_button"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
-                        android:layout_marginBottom="20dp"
-                        android:text="Add"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent">
-
-                    </Button>
-
-                    <Button
-                        android:id="@+id/delete_button"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="50dp"
-                        android:layout_marginBottom="20dp"
-                        android:text="Delete"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.060"
-                        app:layout_constraintStart_toEndOf="@+id/add_button">
-
-                    </Button>
-
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-            </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
@@ -292,8 +247,6 @@
                         app:layout_constraintStart_toEndOf="@+id/textView_tag_category"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent">
-
-
                     </Spinner>
 
                     <Button
