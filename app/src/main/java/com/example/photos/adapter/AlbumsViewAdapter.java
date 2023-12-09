@@ -33,13 +33,13 @@ public class AlbumsViewAdapter extends RecyclerView.Adapter<AlbumsViewAdapter.My
     // View holder for
     public static class MyRecyclerViewHolder extends RecyclerView.ViewHolder {
         private TextView albumName;
-        private ImageView albumFirstImages;
+        private ImageView firstImage;
         private CardView albumCardView;
 
         public MyRecyclerViewHolder(@NonNull View itemView) {
             super(itemView);
             albumName = itemView.findViewById(R.id.album_name_textView);
-            albumFirstImages = itemView.findViewById(R.id.album_first_images);
+            firstImage = itemView.findViewById(R.id.album_first_images);
             albumCardView = itemView.findViewById(R.id.albumCardViewId);
         }
     }
@@ -92,9 +92,12 @@ public class AlbumsViewAdapter extends RecyclerView.Adapter<AlbumsViewAdapter.My
         holder.albumName.setText(album.getName());
 
         // Example: Assuming album.getFirstPhoto() returns the first photo in the album
-        if(!album.getPhotos().isEmpty()){
+        if (!album.getPhotos().isEmpty()) {
             Photo firstPhoto = album.getPhotos().get(0);
-            holder.albumFirstImages.setImageResource(firstPhoto.getImageResourceId());
+            if (firstPhoto.getUri() == null)
+                holder.firstImage.setImageResource(firstPhoto.getImageResourceId());
+//            else
+//                holder.firstImage.setImageURI(firstPhoto.getUri());
         }
 
         // open album card view

@@ -10,11 +10,15 @@ import java.util.List;
 public class Photo implements Serializable {
     private List<String> tags;
     private int imageResourceId;
-    private Uri uri;
+    private String uri;
 
-    public Photo(int imageResourceId, Uri uri) {
+    public Photo(int imageResourceId) {
         this.imageResourceId = imageResourceId;
-        this.uri = uri;
+        tags = new ArrayList<>();
+    }
+
+    public Photo(Uri imageUri) {
+        this.uri = imageUri.toString();
         tags = new ArrayList<>();
     }
 
@@ -35,11 +39,12 @@ public class Photo implements Serializable {
     }
 
     public Uri getUri() {
-        return uri;
+        if (uri == null) return null;
+        return Uri.parse(uri);
     }
 
     public void setUri(Uri uri) {
-        this.uri = uri;
+        this.uri = uri.toString();
     }
 
     @Override

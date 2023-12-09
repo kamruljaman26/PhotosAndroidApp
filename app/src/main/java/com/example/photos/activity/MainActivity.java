@@ -27,14 +27,16 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements Application.ActivityLifecycleCallbacks {
+public class MainActivity extends AppCompatActivity {
 
-    private AlbumsViewAdapter adapter;
+    private Button createButton;
     private Button rename;
     private Button delete;
     private Button search;
+    private RecyclerView recyclerView;
     private ImageView searchButton;
     private EditText getSearchValue;
+    private AlbumsViewAdapter adapter;
 
     private PreferenceDB db;
     private List<Album> albums;
@@ -44,55 +46,36 @@ public class MainActivity extends AppCompatActivity implements Application.Activ
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // hide action bar
+
+        // load albums from db
         db = new PreferenceDB(getApplicationContext());
         albums = db.loadAlbums();
 
-        Button createButton = findViewById(R.id.create_album_button);
-
-        // demoAlbum = PhotoManager.getAlbums();
-        RecyclerView recyclerView = findViewById(R.id.recyclerViewId);
+        // init variables
+        createButton = findViewById(R.id.create_album_button);
+        rename = findViewById(R.id.rename_button);
+        delete = findViewById(R.id.delete_button);
+        searchButton = findViewById(R.id.search_image_button_id);
+        getSearchValue = findViewById(R.id.searchEditTextViewId);
+        search = findViewById(R.id.search_button_b);
+        recyclerView = findViewById(R.id.recyclerViewId);
         adapter = new AlbumsViewAdapter(this, albums);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        /*
+         * Handling creating and saving new albums
+         */
         createButton.setOnClickListener(view -> {
-            // Use an AlertDialog to get user input for the new album name
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Create New Album");
-
-            final EditText input = new EditText(this);
-            input.setInputType(InputType.TYPE_CLASS_TEXT);
-            builder.setView(input);
-
-            builder.setPositiveButton("OK", (dialog, which) -> {
-                String albumName = input.getText().toString().trim();
-                if (!albumName.isEmpty()) {
-                    // Create a new album with the entered name and an empty list of photos
-                    Album newAlbum = new Album(albumName);
-                    // Add general photos to the album
-                    // todo fix:
-//                    List<Photo> allPhotos = PhotoManager.getAllPhotos();
-//                    if (!allPhotos.isEmpty()) {
-//                        // Add the first photo from general photos to the album's photo list
-//                        newAlbum.getPhotos().add(allPhotos.get(0));
-//
-//                    }
-                    // add albums to db
-//                    PhotoManager.addAlbum(newAlbum);
-                    albums.add(newAlbum);
-                    db.saveAlbums(albums);
-
-                    // Notify the adapter about the specific insertion
-                    int position = albums.indexOf(newAlbum);
-                    adapter.notifyItemInserted(position);
-
-                }
-            });
-            builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
-            builder.show();
+            handleCrateButton();
         });
 
-        rename = findViewById(R.id.rename_button);
+
+        /**
+         * todo: later
+         */
+        // rename
         rename.setOnClickListener(view -> {
             int selectedAlbumIndex = adapter.getSelectedAlbumIndex();
             if (selectedAlbumIndex != RecyclerView.NO_POSITION) {
@@ -116,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements Application.Activ
             }
         });
 
-        delete = findViewById(R.id.delete_button);
+        // delete
         delete.setOnClickListener(view -> {
             int selectedAlbumIndex = adapter.getSelectedAlbumIndex();
             if (selectedAlbumIndex != RecyclerView.NO_POSITION) {
@@ -137,12 +120,6 @@ public class MainActivity extends AppCompatActivity implements Application.Activ
             }
         });
 
-        searchButton = findViewById(R.id.search_image_button_id);
-        getSearchValue = findViewById(R.id.searchEditTextViewId);
-
-        search = findViewById(R.id.search_button_b);
-        // search I should be able to search for photos by tag-value "new york" is the same as "nEw YOrk".  need to implement conjunction and disjunction as well.
-        //In addition, matches should now allow auto completion, given a starting substring. For instance, when searching by location, if "New" is typed, matches should include photos taken in New York, New Mexico, New Zealand, etc auto-completed list.
         //Searches apply to photos across all albums, not just to the album that may be open.
         search.setOnClickListener(view -> {
             String searchTerm = getSearchValue.getText().toString().trim().toLowerCase();
@@ -175,6 +152,7 @@ public class MainActivity extends AppCompatActivity implements Application.Activ
             }
         });
 
+        // search button
         searchButton.setOnClickListener(view -> {
             String searchTerm = getSearchValue.getText().toString().trim().toLowerCase();
             if (!searchTerm.isEmpty()) {
@@ -208,35 +186,35 @@ public class MainActivity extends AppCompatActivity implements Application.Activ
 
     }
 
-    @Override
-    public void onActivityDestroyed(@NonNull Activity activity) {
+    // handle create albums
+    private void handleCrateButton() {
+        // Use an AlertDialog to get user input for the new album name
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Create New Album");
+
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(input);
+
+        builder.setPositiveButton("OK", (dialog, which) -> {
+            String albumName = input.getText().toString().trim();
+            if (!albumName.isEmpty()) {
+                // Create a new album with the entered name and an empty list of photos
+                Album newAlbum = new Album(albumName);
+
+                // save in db
+                albums.add(newAlbum);
+                db.addAlbum(newAlbum);
+
+                // Notify the adapter about the specific insertion
+                int position = albums.indexOf(newAlbum);
+                adapter.notifyItemInserted(position);
+            }
+        });
+
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+        builder.show();
     }
-
-
-    @Override
-    public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
-    }
-
-    @Override
-    public void onActivityStarted(@NonNull Activity activity) {
-    }
-
-    @Override
-    public void onActivityResumed(@NonNull Activity activity) {
-    }
-
-    @Override
-    public void onActivityPaused(@NonNull Activity activity) {
-    }
-
-    @Override
-    public void onActivityStopped(@NonNull Activity activity) {
-    }
-
-    @Override
-    public void onActivitySaveInstanceState(@NonNull Activity activity, @NonNull Bundle outState) {
-    }
-
 }
 
 

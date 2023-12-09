@@ -42,8 +42,7 @@ public class Album implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Album album = (Album) o;
-        return Objects.equals(name, album.name) &&
-                Objects.equals(photos, album.photos);
+        return Objects.equals(name, album.name);
     }
 
     @Override

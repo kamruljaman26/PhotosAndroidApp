@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.photos.adapter.PhotoAdapter;
 import com.example.photos.R;
+import com.example.photos.databse.PreferenceDB;
 import com.example.photos.model.Album;
 import com.example.photos.model.Photo;
 
@@ -28,16 +29,21 @@ import java.util.List;
 public class AlbumViewActivity extends AppCompatActivity {
 
     private Album selectedAlbum;
-    private Context context;
     private PhotoAdapter adapter;
     private Button viewSlideShow, addPhoto;
     private static final int REQUEST_CODE_GALLERY = 1;
+
+    private PreferenceDB db;
 
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_view);
+
+        // database
+        db = new PreferenceDB(getApplicationContext());
+
         // Set up the back button
         ImageView backButton = findViewById(R.id.backImageViewId);
         TextView backButtonText = findViewById(R.id.backTextViewId);
@@ -90,7 +96,7 @@ public class AlbumViewActivity extends AppCompatActivity {
             // Check if selectedAlbum is not null
             if (selectedAlbum != null) {
                 // Create a new photo from the URI
-                Photo newPhoto = createPhotoFromUri(selectedImageUri);
+                Photo newPhoto = new Photo(selectedImageUri);
                 if (newPhoto != null) {
                     // Add the photo to the selected album
                     selectedAlbum.addPhoto(newPhoto);
@@ -108,11 +114,15 @@ public class AlbumViewActivity extends AppCompatActivity {
                         adapter.notifyItemInserted(position);
                     }
 
+                    db.addPhoto(selectedAlbum, newPhoto);
+
                     // todo:fix
                     // Update the database with the new photo
 //                    PhotoManager.addPhoto(selectedAlbum,newPhoto);
                     // Update selectedAlbum to reflect the changes
 //                    selectedAlbum = findAlbumByName(selectedAlbum.getName());
+
+
                     setResult(RESULT_OK);
                 } else {
                     // Handle the case when creating a Photo object fails
@@ -121,17 +131,4 @@ public class AlbumViewActivity extends AppCompatActivity {
             }
         }
     }
-
-    private Photo createPhotoFromUri(Uri uri) {
-        if (selectedAlbum != null) {
-            Photo photo = new Photo(-1, uri);
-            Log.d("PhotoCreation", "New Photo: " + photo.toString());  // Add logging
-            return photo;
-        } else {
-            // Handle the case when selectedAlbum is null
-            Log.e("PhotoCreation", "Error: No album selected");
-            return null;
-        }
-    }
-
 }

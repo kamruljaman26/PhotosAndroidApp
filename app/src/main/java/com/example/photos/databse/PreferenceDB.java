@@ -23,6 +23,7 @@ public class PreferenceDB {
         gson = new Gson();
     }
 
+    // save full album
     public void saveAlbums(List<Album> albums) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         String json = gson.toJson(albums);
@@ -30,17 +31,18 @@ public class PreferenceDB {
         editor.apply();
     }
 
+    // load album
     public List<Album> loadAlbums() {
         String json = sharedPreferences.getString(ALBUMS_KEY, null);
         if (json == null) {
             System.out.println("Album is null");
             // Add photos from the drawable folder
-            Photo photo1 = new Photo(R.drawable.acura, null);
-            Photo photo2 = new Photo(R.drawable.bugatti_mistral, null);
-            Photo photo3 = new Photo(R.drawable.jaguar, null);
-            Photo photo4 = new Photo(R.drawable.lamborghini, null);
-            Photo photo5 = new Photo(R.drawable.lamborghini_huracan, null);
-            Photo photo6 = new Photo(R.drawable.porsche, null);
+            Photo photo1 = new Photo(R.drawable.acura);
+            Photo photo2 = new Photo(R.drawable.bugatti_mistral);
+            Photo photo3 = new Photo(R.drawable.jaguar);
+            Photo photo4 = new Photo(R.drawable.lamborghini);
+            Photo photo5 = new Photo(R.drawable.lamborghini_huracan);
+            Photo photo6 = new Photo(R.drawable.porsche);
 
             // Create an album with these photos
             Album album = new Album("Stock");
@@ -60,9 +62,17 @@ public class PreferenceDB {
         return gson.fromJson(json, new TypeToken<List<Album>>() {}.getType());
     }
 
+    // save new albums
     public void addAlbum(Album album) {
         List<Album> albums = loadAlbums();
         albums.add(album);
+        saveAlbums(albums);
+    }
+
+    // save new albums
+    public void addPhoto(Album album, Photo photo) {
+        List<Album> albums = loadAlbums();
+        albums.get(albums.indexOf(album)).addPhoto(photo);
         saveAlbums(albums);
     }
 
