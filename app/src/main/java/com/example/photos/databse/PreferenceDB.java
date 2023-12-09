@@ -76,4 +76,16 @@ public class PreferenceDB {
         saveAlbums(albums);
     }
 
+    // delete album
+    public void deleteAlbum(Album album) {
+        List<Album> albums = loadAlbums();
+        albums.remove(album);
+        saveAlbums(albums);
+    }
+
+    public void renameAlbum(Album album, String name) {
+        List<Album> albums = loadAlbums();
+        albums.get(albums.indexOf(album)).setName(name);
+        saveAlbums(albums);
+    }
 }

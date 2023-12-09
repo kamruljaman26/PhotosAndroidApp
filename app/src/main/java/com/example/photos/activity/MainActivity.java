@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.text.InputType;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -34,8 +35,6 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private Button createButton;
-    private Button rename;
-    private Button delete;
     private Button search;
     private RecyclerView recyclerView;
     private ImageView searchButton;
@@ -64,11 +63,10 @@ public class MainActivity extends AppCompatActivity {
 
         // init variables
         createButton = findViewById(R.id.create_album_button);
-        rename = findViewById(R.id.rename_button);
-        delete = findViewById(R.id.delete_button);
         searchButton = findViewById(R.id.search_image_button_id);
         getSearchValue = findViewById(R.id.searchEditTextViewId);
         search = findViewById(R.id.search_button_b);
+
         recyclerView = findViewById(R.id.recyclerViewId);
         adapter = new AlbumsViewAdapter(this, albums);
         recyclerView.setAdapter(adapter);
@@ -86,8 +84,8 @@ public class MainActivity extends AppCompatActivity {
          * todo: later
          */
         // rename
-        rename.setOnClickListener(view -> {
-            int selectedAlbumIndex = adapter.getSelectedAlbumIndex();
+//        rename.setOnClickListener(view -> {
+/*            int selectedAlbumIndex = adapter.getSelectedAlbumIndex();
             if (selectedAlbumIndex != RecyclerView.NO_POSITION) {
                 // Use an AlertDialog to get user input for the new album name
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -106,12 +104,12 @@ public class MainActivity extends AppCompatActivity {
                 builder.show();
             } else {
                 Toast.makeText(this, "No album selected", Toast.LENGTH_SHORT).show();
-            }
-        });
+            }*/
+//        });
 
         // delete
-        delete.setOnClickListener(view -> {
-            int selectedAlbumIndex = adapter.getSelectedAlbumIndex();
+//        delete.setOnClickListener(view -> {
+/*            int selectedAlbumIndex = adapter.getSelectedAlbumIndex();
             if (selectedAlbumIndex != RecyclerView.NO_POSITION) {
                 // Use an AlertDialog to confirm album deletion
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -127,8 +125,8 @@ public class MainActivity extends AppCompatActivity {
                 builder.show();
             } else {
                 Toast.makeText(this, "No album selected", Toast.LENGTH_SHORT).show();
-            }
-        });
+            }*/
+//        });
 
         //Searches apply to photos across all albums, not just to the album that may be open.
         search.setOnClickListener(view -> {
@@ -207,7 +205,6 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     // Permission denied
                 }
-                return;
             }
         }
     }
