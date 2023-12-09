@@ -74,7 +74,6 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="20dp"
                 app:cardCornerRadius="10dp"
                 app:cardElevation="5dp">
 
@@ -82,7 +81,8 @@
                     android:id="@+id/photoRecyclerView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/white"></androidx.recyclerview.widget.RecyclerView>
+                    android:background="@color/white">
+                </androidx.recyclerview.widget.RecyclerView>
 
             </androidx.cardview.widget.CardView>
 

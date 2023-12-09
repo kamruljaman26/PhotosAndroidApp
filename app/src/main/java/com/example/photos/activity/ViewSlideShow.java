@@ -30,7 +30,6 @@ public class ViewSlideShow extends AppCompatActivity {
         ImageView backButton = findViewById(R.id.backImageViewId);
         TextView backButtonText = findViewById(R.id.backTextViewId);
 
-
         backButton.setOnClickListener(view -> onBackPressed());
         backButtonText.setOnClickListener(view -> onBackPressed());
 

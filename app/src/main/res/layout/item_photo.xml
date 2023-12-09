@@ -14,7 +14,7 @@
     <LinearLayout
         android:id="@+id/item_1_layout"
         android:layout_width="match_parent"
-        android:layout_height="220dp"
+        android:layout_height="300dp"
         android:gravity="center"
         android:background="@color/black"
         android:orientation="vertical"
@@ -29,10 +29,10 @@
             <ImageView
                 android:id="@+id/photoImageView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:padding="15dp"
-                android:src="@drawable/acura">
+                >
 
             </ImageView>
 

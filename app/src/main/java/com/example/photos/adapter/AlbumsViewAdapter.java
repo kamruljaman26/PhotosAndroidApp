@@ -2,6 +2,8 @@ package com.example.photos.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -20,6 +22,7 @@ import com.example.photos.activity.AlbumViewActivity;
 import com.example.photos.model.Album;
 import com.example.photos.model.Photo;
 
+import java.io.File;
 import java.util.List;
 
 public class AlbumsViewAdapter extends RecyclerView.Adapter<AlbumsViewAdapter.MyRecyclerViewHolder> {
@@ -93,39 +96,43 @@ public class AlbumsViewAdapter extends RecyclerView.Adapter<AlbumsViewAdapter.My
 
         // Example: Assuming album.getFirstPhoto() returns the first photo in the album
         if (!album.getPhotos().isEmpty()) {
-            Photo firstPhoto = album.getPhotos().get(0);
-            if (firstPhoto.getUri() == null)
-                holder.firstImage.setImageResource(firstPhoto.getImageResourceId());
-//            else
-//                holder.firstImage.setImageURI(firstPhoto.getUri());
+            Photo photo = album.getPhotos().get(0);
+            if (photo.getUri() == null)
+                holder.firstImage.setImageResource(photo.getImageResourceId());
+            else {
+                // load URI image
+                File imgFile = new  File(photo.getUri());
+                if(imgFile.exists()) {
+                    Bitmap bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                    holder.firstImage.setImageBitmap(bitmap);
+                }
+            }
         }
 
-        // open album card view
+        // open album in another activity
         holder.albumCardView.setOnClickListener(view -> {
             int adapterPosition = holder.getAdapterPosition();
             if (adapterPosition != RecyclerView.NO_POSITION) {
-                selectedPosition = adapterPosition;  // Update selected position here
+                selectedPosition = adapterPosition;
                 Album selectedAlbum = albums.get(adapterPosition);
                 Intent intent = new Intent(context, AlbumViewActivity.class);
-                Toast.makeText(view.getContext(), "Clicked " + adapterPosition, Toast.LENGTH_SHORT).show();
-                // Pass the selected album to AlbumView activity
                 intent.putExtra("album", selectedAlbum);
                 view.getContext().startActivity(intent);
             }
         });
 
-        // Set up touch listener on the card view
-        holder.albumCardView.setOnTouchListener((view, event) -> {
-            if (gestureDetector.onTouchEvent(event)) {
-                // Double-tap action
-                return true; // to consume the event
-            } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                // Single tap action
-                view.performClick();
-                return true; // to consume the event
-            }
-            return false;
-        });
+//        // Set up touch listener on the card view
+//        holder.albumCardView.setOnTouchListener((view, event) -> {
+//            if (gestureDetector.onTouchEvent(event)) {
+//                // Double-tap action
+//                return true; // to consume the event
+//            } else if (event.getAction() == MotionEvent.ACTION_UP) {
+//                // Single tap action
+//                view.performClick();
+//                return true; // to consume the event
+//            }
+//            return false;
+//        });
     }
 
     @Override

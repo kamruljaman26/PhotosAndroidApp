@@ -4,12 +4,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.InputType;
 import android.widget.Button;
@@ -46,7 +50,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // hide action bar
+        // manage permissions
+        if (ContextCompat.checkSelfPermission(getApplicationContext(),
+                Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED) {
+        }
+        ActivityCompat.requestPermissions(this,
+                new String[]{Manifest.permission.READ_MEDIA_IMAGES},
+                111);
 
         // load albums from db
         db = new PreferenceDB(getApplicationContext());
@@ -176,8 +186,7 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra("searchResults", (Serializable) searchResults);
                 // Start the new activity
                 startActivity(intent);
-                // Start the new activity
-                startActivity(intent);
+
                 Toast.makeText(MainActivity.this, "Search completed", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(MainActivity.this, "Please enter a search term", Toast.LENGTH_SHORT).show();
@@ -185,6 +194,24 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case 111: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Permission was granted
+                } else {
+                    // Permission denied
+                }
+                return;
+            }
+        }
+    }
+
 
     // handle create albums
     private void handleCrateButton() {
@@ -214,6 +241,15 @@ public class MainActivity extends AppCompatActivity {
 
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
         builder.show();
+    }
+
+    @Override
+    protected void onResume() {
+        albums = db.loadAlbums();
+        adapter = new AlbumsViewAdapter(this, albums);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        super.onResume();
     }
 }
 

@@ -1,14 +1,15 @@
 package com.example.photos.adapter;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
-
 import com.example.photos.model.Photo;
-
+import java.io.File;
 import java.util.List;
 
 public class ImagePagerAdapter extends PagerAdapter {
@@ -35,16 +36,23 @@ public class ImagePagerAdapter extends PagerAdapter {
         ImageView imageView = new ImageView(container.getContext());
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
-        // Load the image into the ImageView
-        Photo photo = photos.get(position);
-        if (photo.getUri() != null) {
-            // Load image from Uri
-            imageView.setImageURI(photo.getUri());
-        } else {
-            // Load image from resource ID
-            imageView.setImageResource(photo.getImageResourceId());
+        try {
+            // Load the image into the ImageView
+            Photo photo = photos.get(position);
+            if (photo.getUri() != null) {
+                File imgFile = new  File(photo.getUri());
+                if(imgFile.exists()) {
+                    Bitmap bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                    imageView.setImageBitmap(bitmap);
+                }
+            } else {
+                imageView.setImageResource(photo.getImageResourceId());
+            }
+            container.addView(imageView);
+        }catch (Exception e){
+            e.printStackTrace();
         }
-        container.addView(imageView);
+
         return imageView;
     }
 

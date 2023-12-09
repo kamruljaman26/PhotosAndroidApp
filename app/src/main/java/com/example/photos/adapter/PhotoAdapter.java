@@ -2,20 +2,20 @@ package com.example.photos.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.bumptech.glide.Glide;
 import com.example.photos.R;
 import com.example.photos.activity.PhotoDetailsActivity;
 import com.example.photos.model.Album;
 import com.example.photos.model.Photo;
 
+import java.io.File;
 import java.util.List;
 
 public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder> {
@@ -40,11 +40,12 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         Photo photo = photos.get(position);
 
         if (photo.getUri() != null) {
-            // Load image from URI
-            Glide.with(context)
-                    .load(photo.getUri())
-                    .override(600, 800)
-                    .into(holder.photoImageView);
+            // load URI image
+            File imgFile = new  File(photo.getUri());
+            if(imgFile.exists()) {
+                Bitmap bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                holder.photoImageView.setImageBitmap(bitmap);
+            }
         } else if (photo.getImageResourceId() != 0) {
             // Load image from drawable resource
             holder.photoImageView.setImageResource(photo.getImageResourceId());

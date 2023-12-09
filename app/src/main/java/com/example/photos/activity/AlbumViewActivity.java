@@ -23,6 +23,11 @@ import com.example.photos.databse.PreferenceDB;
 import com.example.photos.model.Album;
 import com.example.photos.model.Photo;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -87,16 +92,40 @@ public class AlbumViewActivity extends AppCompatActivity {
         });
     }
 
+    private String saveImageToInternalStorage(Uri uri, Context context) {
+        String fileName = "myImage_" + System.currentTimeMillis() + ".jpg"; // or use appropriate format
+        File file = new File(context.getFilesDir(), fileName);
+
+        try (InputStream inputStream = context.getContentResolver().openInputStream(uri);
+             OutputStream outputStream = new FileOutputStream(file)) {
+
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = inputStream.read(buffer)) > 0) {
+                outputStream.write(buffer, 0, length);
+            }
+            return file.getAbsolutePath();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE_GALLERY && resultCode == RESULT_OK && data != null) {
             // User has selected a photo from the gallery
             Uri selectedImageUri = data.getData();
+
+            // copy and store to image to local storage
+            String internalUri = saveImageToInternalStorage(selectedImageUri, this);
+
             // Check if selectedAlbum is not null
             if (selectedAlbum != null) {
                 // Create a new photo from the URI
-                Photo newPhoto = new Photo(selectedImageUri);
+                Photo newPhoto = new Photo(internalUri);
                 if (newPhoto != null) {
                     // Add the photo to the selected album
                     selectedAlbum.addPhoto(newPhoto);
@@ -115,13 +144,6 @@ public class AlbumViewActivity extends AppCompatActivity {
                     }
 
                     db.addPhoto(selectedAlbum, newPhoto);
-
-                    // todo:fix
-                    // Update the database with the new photo
-//                    PhotoManager.addPhoto(selectedAlbum,newPhoto);
-                    // Update selectedAlbum to reflect the changes
-//                    selectedAlbum = findAlbumByName(selectedAlbum.getName());
-
 
                     setResult(RESULT_OK);
                 } else {
