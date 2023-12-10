@@ -26,17 +26,13 @@ public class SearchActivity extends AppCompatActivity {
 
         ImageView backButton = findViewById(R.id.backImageViewId);
         TextView backButtonText = findViewById(R.id.backTextViewId);
+        recyclerView = findViewById(R.id.searchPhotoRecycler);
         backButton.setOnClickListener(view -> onBackPressed());
         backButtonText.setOnClickListener(view -> onBackPressed());
 
-        recyclerView = findViewById(R.id.searchPhotoRecycler);
-        adapter = new SearchAdapter();
-        // Get the search results from the Intent
+        // init search data
         List<Photo> searchResults = (List<Photo>) getIntent().getSerializableExtra("searchResults");
-
-        // Set the search results to the adapter
-        adapter.setSearchResults(searchResults);
-        // Set the adapter to the RecyclerView
+        adapter = new SearchAdapter(searchResults, this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }

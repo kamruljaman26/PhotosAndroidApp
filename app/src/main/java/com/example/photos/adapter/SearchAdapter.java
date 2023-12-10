@@ -1,5 +1,9 @@
 package com.example.photos.adapter;
 
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,16 +13,21 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.photos.R;
+import com.example.photos.activity.PhotoDetailsActivity;
+import com.example.photos.model.Album;
 import com.example.photos.model.Photo;
 
+import java.io.File;
 import java.util.List;
 
 public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder> {
 
-    private List<Photo> searchResults;
+    private List<Photo> photos;
+    private Context context;
 
-    public void setSearchResults(List<Photo> searchResults) {
-        this.searchResults = searchResults;
+    public SearchAdapter(List<Photo> photos, Context context) {
+        this.photos = photos;
+        this.context = context;
     }
 
     @NonNull
@@ -30,29 +39,46 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Photo photo = searchResults.get(position);
-        holder.bind(photo);
+        Photo photo = photos.get(position);
+        if (photo.getUri() != null) {
+            // load URI image
+            File imgFile = new File(photo.getUri());
+            if (imgFile.exists()) {
+                Bitmap bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                holder.photoImageView.setImageBitmap(bitmap);
+            }
+        } else if (photo.getImageResourceId() != 0) {
+            holder.photoImageView.setImageResource(photo.getImageResourceId());
+        }
+
+        holder.photoImageView.setOnClickListener(view -> {
+            // create a search album
+            Album album = new Album("Search Album");
+            for (Photo p : photos) {
+                album.addPhoto(p);
+            }
+
+            // Pass the corresponding album to another activity
+            Intent intent = new Intent(context, PhotoDetailsActivity.class);
+            intent.putExtra("PHOTO_KEY", photo);
+            intent.putExtra("ALBUM_KEY", album);
+            intent.putExtra("PHOTO_INDEX", album.getPhotos().indexOf(photo));
+            context.startActivity(intent);
+        });
     }
 
     @Override
     public int getItemCount() {
-        return searchResults != null ? searchResults.size() : 0;
+        return photos.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        private ImageView photo;
+        private ImageView photoImageView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            photo = itemView.findViewById(R.id.photoImageView_for_add); // Replace with the actual ID of your ImageView in the item layout
-        }
-
-        public void bind(Photo photoItem) {
-            // Assuming you have a method like getImageResourceId() in your Photo class
-            int imageResourceId = photoItem.getImageResourceId();
-            // Set the image resource to the ImageView
-            photo.setImageResource(imageResourceId);
+            photoImageView = itemView.findViewById(R.id.photoImageView);
         }
     }
 

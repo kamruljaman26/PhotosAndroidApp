@@ -74,7 +74,7 @@
                     android:layout_height="match_parent">
 
                     <ImageView
-                        android:id="@+id/search_image_button_id"
+                        android:id="@+id/search_image_view_id"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:layout_marginStart="10dp"
@@ -83,17 +83,20 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                    <EditText
+                    <AutoCompleteTextView
                         android:id="@+id/searchEditTextViewId"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
                         android:hint="Search Photo"
                         android:textColor="@color/white"
                         android:textColorHint="@color/white"
                         android:textSize="16sp"
                         android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/search_image_button_id"
+                        app:layout_constraintEnd_toStartOf="@+id/search_button_b"
+                        app:layout_constraintStart_toEndOf="@+id/search_image_view_id"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <Button

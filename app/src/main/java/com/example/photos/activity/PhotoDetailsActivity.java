@@ -165,8 +165,8 @@ public class PhotoDetailsActivity extends AppCompatActivity {
                         .addTag(new Tag(tagType[0], tagValueTxtFld.getText().toString()));
                 boolean b = selectedPhoto.addTag(new Tag(tagType[0], tagValueTxtFld.getText().toString()));
                 db.saveAlbums(albums);
-
-                updateTags(); // update change
+                tagValueTxtFld.setText("");
+                updateTagsChnageOnUI(); // update change
                 if(b)
                     showToast("Tag Added Successfully ");
                 else
@@ -211,13 +211,13 @@ public class PhotoDetailsActivity extends AppCompatActivity {
 
                 db.saveAlbums(albums);
                 selectedPhoto.removeTag(tag[0]);
-                updateTags();
+                updateTagsChnageOnUI();
                 showToast("Tag Removed Successfully ");
             }
         });
     }
 
-    private void updateTags(){
+    private void updateTagsChnageOnUI(){
         tags = new ArrayAdapter<>(getApplicationContext(),
                 R.layout.custom_spinner_item,
                 new ArrayList<>(selectedPhoto.getTags())

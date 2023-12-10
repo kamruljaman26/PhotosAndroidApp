@@ -12,9 +12,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.InputType;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.photos.adapter.AlbumViewAdapter;
@@ -22,18 +23,19 @@ import com.example.photos.R;
 import com.example.photos.databse.PreferenceDB;
 import com.example.photos.model.Album;
 import com.example.photos.model.Photo;
+import com.example.photos.model.Tag;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button createButton;
-    private Button search;
+    private Button createButton, searchButton;
     private RecyclerView recyclerView;
-    private ImageView searchButton;
-    private EditText getSearchValue;
+    private AutoCompleteTextView autoCompleteTxtView;
     private AlbumViewAdapter adapter;
 
     private PreferenceDB db;
@@ -58,14 +60,17 @@ public class MainActivity extends AppCompatActivity {
 
         // init variables
         createButton = findViewById(R.id.create_album_button);
-        searchButton = findViewById(R.id.search_image_button_id);
-        getSearchValue = findViewById(R.id.searchEditTextViewId);
-        search = findViewById(R.id.search_button_b);
-
+        searchButton = findViewById(R.id.search_button_b);
         recyclerView = findViewById(R.id.recyclerViewId);
         adapter = new AlbumViewAdapter(this, albums);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        autoCompleteTxtView = findViewById(R.id.searchEditTextViewId);
+
+        /**
+         * Init Auto complete text view
+         */
+        updateTagsSearchData();
 
         /*
          * Handling creating and saving new albums
@@ -75,69 +80,68 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        //Searches apply to photos across all albums, not just to the album that may be open.
-        search.setOnClickListener(view -> {
-            String searchTerm = getSearchValue.getText().toString().trim().toLowerCase();
-            if (!searchTerm.isEmpty()) {
-                List<Photo> searchResults = new ArrayList<>();
-                //todo: fix search
-                // Iterate through all photos and check if the tags match the search term
-//                List<Photo> allPhotos = PhotoManager.getAllPhotos();
-//                for (Photo photo : allPhotos) {
-//                    for (String tag : photo.getTags()) {
-//                        if (tag.toLowerCase().contains(searchTerm)) {
-//                            searchResults.add(photo);
-//                            break;  // Break out of inner loop once a match is found for the current photo
-//                        }
-//                    }
-//                }
-                // TODO: Display or handle the search results as needed
-                // i want to open a new activity  with the search results
-                // Create an Intent to start the SearchResultsActivity
-                Intent intent = new Intent(MainActivity.this, SearchActivity.class);
-                // Pass the search results to the new activity
-                intent.putExtra("searchResults", (Serializable) searchResults);
-                // Start the new activity
-                startActivity(intent);
-                // Start the new activity
-                startActivity(intent);
-                Toast.makeText(MainActivity.this, "Search completed", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(MainActivity.this, "Please enter a search term", Toast.LENGTH_SHORT).show();
-            }
+        /**
+         * Handle Search Button
+         */
+        searchButton.setOnClickListener(view -> {
+            handleSearchButton();
         });
 
-        // search button
-        searchButton.setOnClickListener(view -> {
-            String searchTerm = getSearchValue.getText().toString().trim().toLowerCase();
-            if (!searchTerm.isEmpty()) {
-                List<Photo> searchResults = new ArrayList<>();
-                // Iterate through all photos and check if the tags match the search term
-                //todo: fix search
-/*                List<Photo> allPhotos = PhotoManager.getAllPhotos();
-                for (Photo photo : allPhotos) {
-                    for (String tag : photo.getTags()) {
-                        if (tag.toLowerCase().contains(searchTerm)) {
+    }
+
+    // update tags suggestion in search
+    private void updateTagsSearchData() {
+        List<String> allTags = getAllTags();
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_dropdown_item_1line, allTags);
+        autoCompleteTxtView.setAdapter(adapter);
+        autoCompleteTxtView.setThreshold(1); // Start showing suggestions after 1 character is typed
+    }
+
+    // fetch all tags as a list from all albums
+    private List<String> getAllTags() {
+        Set<String> tags = new HashSet<>();
+        for (Album album : albums) {
+            for (Photo photo : album.getPhotos()) {
+                for (Tag tag : photo.getTags()) {
+                    tags.add(tag.getValue());
+                }
+            }
+        }
+        return new ArrayList<>(tags);
+    }
+
+    private void handleSearchButton() {
+        String searchTerm = autoCompleteTxtView.getText().toString().trim().toLowerCase();
+        if (!searchTerm.isEmpty()) {
+            List<Photo> searchResults = new ArrayList<>();
+
+            // all photo with tags
+            for (Album album : albums) {
+                for (Photo photo : album.getPhotos()) {
+                    for (Tag tag : photo.getTags()) {
+                        if (tag.getValue().equalsIgnoreCase(searchTerm)) {
                             searchResults.add(photo);
-                            break;  // Break out of inner loop once a match is found for the current photo
+                            break;
                         }
                     }
-                }*/
-                // TODO: Display or handle the search results as needed
-                // i want to open a new activity  with the search results
+                }
+            }
+
+            if (searchResults.isEmpty()) {
+                Toast.makeText(MainActivity.this, "No photo found with tag " + searchTerm, Toast.LENGTH_SHORT).show();
+            } else {
+
                 // Create an Intent to start the SearchResultsActivity
                 Intent intent = new Intent(MainActivity.this, SearchActivity.class);
-                // Pass the search results to the new activity
                 intent.putExtra("searchResults", (Serializable) searchResults);
-                // Start the new activity
                 startActivity(intent);
 
-                Toast.makeText(MainActivity.this, "Search completed", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(MainActivity.this, "Please enter a search term", Toast.LENGTH_SHORT).show();
+                autoCompleteTxtView.setText("");
             }
-        });
-
+        } else {
+            Toast.makeText(MainActivity.this, "Please enter a search term", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -193,6 +197,7 @@ public class MainActivity extends AppCompatActivity {
         adapter = new AlbumViewAdapter(this, albums);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        updateTagsSearchData();
         super.onResume();
     }
 }
