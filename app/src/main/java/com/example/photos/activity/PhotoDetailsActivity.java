@@ -158,19 +158,23 @@ public class PhotoDetailsActivity extends AppCompatActivity {
          * Handle add tag button
          */
         addTagBtn.setOnClickListener(view -> {
-            if (!tagType[0].isEmpty()) {
-                albums.get(albums.indexOf(parentAlbum))
-                        .getPhotos()
-                        .get(selectedPhotoIndex)
-                        .addTag(new Tag(tagType[0], tagValueTxtFld.getText().toString()));
-                boolean b = selectedPhoto.addTag(new Tag(tagType[0], tagValueTxtFld.getText().toString()));
-                db.saveAlbums(albums);
-                tagValueTxtFld.setText("");
-                updateTagsChnageOnUI(); // update change
-                if(b)
-                    showToast("Tag Added Successfully ");
-                else
-                    showToast("Duplicate Tag");
+            if(!tagValueTxtFld.getText().toString().isEmpty()) {
+                if (!tagType[0].isEmpty()) {
+                    albums.get(albums.indexOf(parentAlbum))
+                            .getPhotos()
+                            .get(selectedPhotoIndex)
+                            .addTag(new Tag(tagType[0], tagValueTxtFld.getText().toString()));
+                    boolean b = selectedPhoto.addTag(new Tag(tagType[0], tagValueTxtFld.getText().toString()));
+                    db.saveAlbums(albums);
+                    tagValueTxtFld.setText("");
+                    updateTagsChnageOnUI(); // update change
+                    if (b)
+                        showToast("Tag Added Successfully ");
+                    else
+                        showToast("Duplicate Tag");
+                }
+            }else {
+                showToast("Enter tag value to add tag.");
             }
         });
 
@@ -197,12 +201,13 @@ public class PhotoDetailsActivity extends AppCompatActivity {
             }
         });
 
-        Log.e("Selected Tags: ", tag[0]);
 
         /**
          * Handle add tag button
          */
         removeTag.setOnClickListener(view -> {
+            Log.e("Selected Tags: ", tag[0]);
+
             if (!tag[0].isEmpty()) {
                 albums.get(albums.indexOf(parentAlbum))
                         .getPhotos()
@@ -212,7 +217,10 @@ public class PhotoDetailsActivity extends AppCompatActivity {
                 db.saveAlbums(albums);
                 selectedPhoto.removeTag(tag[0]);
                 updateTagsChnageOnUI();
+                tag[0] = "";
                 showToast("Tag Removed Successfully ");
+            }else {
+                showToast("No tag available for remove.");
             }
         });
     }
