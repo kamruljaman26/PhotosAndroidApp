@@ -14,10 +14,10 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
             android:orientation="vertical"
-            >
+            android:paddingBottom="20dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp">
 
             <!-- Back Button -->
             <androidx.cardview.widget.CardView
@@ -64,11 +64,11 @@
                 android:layout_marginTop="20dp"
                 app:cardCornerRadius="10dp"
                 app:cardElevation="5dp">
+
                 <ImageView
                     android:id="@+id/imageViewID"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-                </ImageView>
+                    android:layout_height="match_parent"></ImageView>
 
             </androidx.cardview.widget.CardView>
 
@@ -144,7 +144,7 @@
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
+                android:layout_height="230dp"
                 android:layout_marginTop="20dp"
                 app:cardCornerRadius="10dp"
                 app:cardElevation="5dp">
@@ -155,67 +155,34 @@
                     android:background="@color/black">
 
                     <TextView
-                        android:id="@+id/textview_display_tag_details"
-                        android:layout_width="270dp"
-                        android:layout_height="60dp"
-                        android:layout_marginStart="100dp"
-                        android:gravity="center"
-                        android:text="Tags value"
-                        android:textAlignment="center"
-                        android:visibility="visible"
-                        android:textColor="@color/white"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
-                        >
-
-                    </TextView>
-
-                    <TextView
-                        android:id="@+id/textview_display_tag_value"
+                        android:id="@+id/textfld"
                         android:layout_width="100dp"
                         android:layout_height="60dp"
-                        android:layout_marginStart="12dp"
-                        android:layout_marginTop="152dp"
+                        android:layout_marginStart="20dp"
                         android:gravity="center"
-                        android:text="Enter Tag value"
+                        android:text="Enter value"
                         android:textAlignment="center"
                         android:textColor="@color/white"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
-                        >
-
-                    </TextView>
-
-                    <TextView
-                        android:id="@+id/textview_display_tag"
-                        android:layout_width="100dp"
-                        android:layout_height="60dp"
-                        android:layout_marginStart="10dp"
-                        android:gravity="center"
-                        android:text="Tags:"
-                        android:textAlignment="center"
-                        android:textColor="@color/white"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
+                        app:layout_constraintTop_toBottomOf="@+id/textView_tag_category">
                         >
 
                     </TextView>
 
                     <EditText
                         android:id="@+id/edittext_enter_tag_value"
-                        android:layout_width="220dp"
+                        android:layout_width="0dp"
                         android:layout_height="60dp"
-                        android:layout_marginStart="128dp"
-                        android:layout_marginTop="152dp"
-                        android:layout_marginEnd="23dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="20dp"
                         android:gravity="center"
                         android:hint="Enter Tag Value"
-                        android:textColorHint="@color/white"
                         android:textAlignment="center"
                         android:textColor="@color/white"
+                        android:textColorHint="@color/ash"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
+                        app:layout_constraintStart_toEndOf="@+id/textfld"
+                        app:layout_constraintTop_toTopOf="@+id/textfld">
                         >
 
                     </EditText>
@@ -224,61 +191,131 @@
                         android:id="@+id/textView_tag_category"
                         android:layout_width="100dp"
                         android:layout_height="60dp"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginTop="83dp"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="5dp"
                         android:gravity="center"
-                        android:text="Select Tag Category"
+                        android:text="Select Type"
                         android:textAlignment="center"
                         android:textColor="@color/white"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
+                        app:layout_constraintTop_toBottomOf="@+id/textView3">
 
                     </TextView>
 
                     <Spinner
                         android:id="@+id/tag_category_spinner"
-                        android:layout_width="200dp"
+                        android:layout_width="0dp"
                         android:layout_height="54dp"
-                        android:layout_marginStart="120dp"
-                        android:layout_marginTop="83dp"
-                        android:layout_marginEnd="34dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="20dp"
                         android:backgroundTint="@color/white"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/textView_tag_category"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
+                        app:layout_constraintTop_toTopOf="@+id/textView_tag_category">
                     </Spinner>
 
-                    <Button
-                        android:id="@+id/remove_tag_button"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="50dp"
-                        android:layout_marginBottom="20dp"
-                        android:text="Remove Tag"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.12"
-                        app:layout_constraintStart_toEndOf="@+id/add_tag_button">
-
-                    </Button>
 
                     <Button
                         android:id="@+id/add_tag_button"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
-                        android:layout_marginBottom="20dp"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginEnd="20dp"
+                        android:layout_marginBottom="10dp"
                         android:text="Add Tag"
                         app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent">
 
                     </Button>
+
+                    <TextView
+                        android:id="@+id/textView3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="20dp"
+                        android:text="Add tags"
+                        android:textColor="@color/white"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </androidx.cardview.widget.CardView>
 
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:layout_marginTop="20dp"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="5dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/black">
+
+                    <TextView
+                        android:id="@+id/textView_tag"
+                        android:layout_width="100dp"
+                        android:layout_height="60dp"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="5dp"
+                        android:gravity="center"
+                        android:text="Select Tag"
+                        android:textAlignment="center"
+                        android:textColor="@color/white"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textView4">
+
+                    </TextView>
+
+                    <Spinner
+                        android:id="@+id/tag_spinner"
+                        android:layout_width="0dp"
+                        android:layout_height="54dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="20dp"
+                        android:backgroundTint="@color/white"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/textView_tag"
+                        app:layout_constraintTop_toTopOf="@+id/textView_tag">
+                    </Spinner>
+
+
+                    <Button
+                        android:id="@+id/remove_tag_button"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginEnd="20dp"
+                        android:layout_marginBottom="10dp"
+                        android:text="Remove Tag"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent">
+
+                    </Button>
+
+                    <TextView
+                        android:id="@+id/textView4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="20dp"
+                        android:text="Remove tags"
+                        android:textColor="@color/white"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.cardview.widget.CardView>
 
         </LinearLayout>
 

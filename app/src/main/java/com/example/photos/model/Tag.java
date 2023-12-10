@@ -1,8 +1,9 @@
 package com.example.photos.model;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Tag {
+public class Tag implements Serializable {
     private String key;
     private String value;
 
@@ -32,7 +33,7 @@ public class Tag {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Tag tag = (Tag) o;
-        return Objects.equals(key, tag.key) && Objects.equals(value, tag.value);
+        return toString().equals(tag.toString());
     }
 
     @Override
@@ -42,9 +43,6 @@ public class Tag {
 
     @Override
     public String toString() {
-        return "Tag{" +
-                "key='" + key + '\'' +
-                ", value='" + value + '\'' +
-                '}';
+        return key+":"+value;
     }
 }

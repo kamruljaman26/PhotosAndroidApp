@@ -1,26 +1,29 @@
 package com.example.photos.model;
 
 import android.net.Uri;
+import android.util.Log;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 // Photos Pojo
 public class Photo implements Serializable {
-    private List<Tag> tags;
+    private final Set<Tag> tags;
     private int imageResourceId;
     private String internalUri;
 
     public Photo(int imageResourceId) {
         this.imageResourceId = imageResourceId;
-        tags = new ArrayList<>();
+        tags = new HashSet<>();
     }
 
     public Photo(String internalUri) {
         this.internalUri = internalUri;
-        tags = new ArrayList<>();
+        tags = new HashSet<>();
     }
 
     @Override
@@ -32,6 +35,23 @@ public class Photo implements Serializable {
         if(getImageResourceId() != 0 && photo.getImageResourceId()
                 != 0 && getImageResourceId() == photo.getImageResourceId()) return true;
         return false;
+    }
+
+    public boolean addTag(Tag tag){
+        return tags.add(tag);
+    }
+
+    public void removeTag(String s) {
+        for(Tag tag:tags) {
+            if(tag.toString().contains(s)){
+                tags.remove(tag);
+                break;
+            }
+        }
+    }
+
+    public Set<Tag> getTags() {
+        return tags;
     }
 
     @Override
