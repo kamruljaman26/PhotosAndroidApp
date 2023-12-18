@@ -111,19 +111,42 @@ public class MainActivity extends AppCompatActivity {
         return new ArrayList<>(tags);
     }
 
+    /**
+     * Handle Search Logic
+     * Conjunction and Disjunction in Searches: The system should support both conjunction (AND)
+     * and disjunction (OR) in search queries. This allows users to refine their searches by
+     * combining multiple conditions. For example:
+     *
+     * Conjunction: Finding photos tagged with both "John" (person) and "Paris" (location).
+     * Disjunction: Finding photos tagged with either "Mary" (person) or "London" (location).
+     */
     private void handleSearchButton() {
         String searchTerm = autoCompleteTxtView.getText().toString().trim().toLowerCase();
         if (!searchTerm.isEmpty()) {
             List<Photo> searchResults = new ArrayList<>();
 
-            // all photo with tags
+            // Split the searchTerm based on 'and' or 'or'
+            String[] keywords = searchTerm.split("(and|or)");
+            boolean isConjunction = searchTerm.contains("and");
+
             for (Album album : albums) {
                 for (Photo photo : album.getPhotos()) {
+                    boolean firstMatch = false;
+                    boolean secondMatch = false;
+
                     for (Tag tag : photo.getTags()) {
-                        if (tag.getValue().equalsIgnoreCase(searchTerm)) {
-                            searchResults.add(photo);
-                            break;
+                        if (tag.getValue().equalsIgnoreCase(keywords[0].trim())) {
+                            firstMatch = true;
                         }
+                        if (keywords.length > 1 && tag.getValue().equalsIgnoreCase(keywords[1].trim())) {
+                            secondMatch = true;
+                        }
+                    }
+
+                    // Add photo to results based on conjunction or disjunction
+                    if ((isConjunction && firstMatch && secondMatch) ||
+                            (!isConjunction && (firstMatch || secondMatch))) {
+                        searchResults.add(photo);
                     }
                 }
             }
@@ -131,7 +154,6 @@ public class MainActivity extends AppCompatActivity {
             if (searchResults.isEmpty()) {
                 Toast.makeText(MainActivity.this, "No photo found with tag " + searchTerm, Toast.LENGTH_SHORT).show();
             } else {
-
                 // Create an Intent to start the SearchResultsActivity
                 Intent intent = new Intent(MainActivity.this, SearchActivity.class);
                 intent.putExtra("searchResults", (Serializable) searchResults);
@@ -143,6 +165,7 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(MainActivity.this, "Please enter a search term", Toast.LENGTH_SHORT).show();
         }
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode,

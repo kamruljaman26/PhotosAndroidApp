@@ -26,6 +26,7 @@ import com.example.photos.model.Tag;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class PhotoDetailsActivity extends AppCompatActivity {
 
@@ -160,10 +161,24 @@ public class PhotoDetailsActivity extends AppCompatActivity {
         addTagBtn.setOnClickListener(view -> {
             if(!tagValueTxtFld.getText().toString().isEmpty()) {
                 if (!tagType[0].isEmpty()) {
+                    Tag tag = new Tag(tagType[0], tagValueTxtFld.getText().toString());
+
+                    Set<Tag> tags1 = albums.get(albums.indexOf(parentAlbum))
+                            .getPhotos()
+                            .get(selectedPhotoIndex).getTags();
+                    for (Tag t:tags1){
+                        if (tag.getKey().equalsIgnoreCase("Location")
+                                && t.getKey().equalsIgnoreCase("Location")){
+                            showToast("You can only add 1 location tag for a image.");
+                            return;
+                        }
+                    }
+
                     albums.get(albums.indexOf(parentAlbum))
                             .getPhotos()
                             .get(selectedPhotoIndex)
-                            .addTag(new Tag(tagType[0], tagValueTxtFld.getText().toString()));
+                            .addTag(tag);
+
                     boolean b = selectedPhoto.addTag(new Tag(tagType[0], tagValueTxtFld.getText().toString()));
                     db.saveAlbums(albums);
                     tagValueTxtFld.setText("");
