@@ -37,12 +37,11 @@ public class PreferenceDB {
         if (json == null) {
             System.out.println("Album is null");
             // Add photos from the drawable folder
-            Photo photo1 = new Photo(R.drawable.acura);
-            Photo photo2 = new Photo(R.drawable.bugatti_mistral);
-            Photo photo3 = new Photo(R.drawable.jaguar);
-            Photo photo4 = new Photo(R.drawable.lamborghini);
-            Photo photo5 = new Photo(R.drawable.lamborghini_huracan);
-            Photo photo6 = new Photo(R.drawable.porsche);
+            Photo photo1 = new Photo(R.drawable.bikes1);
+            Photo photo2 = new Photo(R.drawable.bikes2);
+            Photo photo3 = new Photo(R.drawable.bikes3);
+            Photo photo4 = new Photo(R.drawable.bikes4);
+            Photo photo5 = new Photo(R.drawable.bikes5);
 
             // Create an album with these photos
             Album album = new Album("Stock");
